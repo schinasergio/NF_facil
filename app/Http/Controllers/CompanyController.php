@@ -35,20 +35,9 @@ class CompanyController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(\App\Http\Requests\StoreCompanyRequest $request)
     {
-        $validated = $request->validate([
-            'razao_social' => 'required|string|max:255',
-            'cnpj' => 'required|string|max:18|unique:companies,cnpj',
-            'regime_tributario' => 'required|string',
-            'logradouro' => 'required|string',
-            'numero' => 'required|string',
-            'bairro' => 'required|string',
-            'cep' => 'required|string|max:10',
-            'cidade' => 'required|string',
-            'uf' => 'required|string|max:2',
-            // Add other fields as needed
-        ]);
+        $validated = $request->validated();
 
         // Split data into company and address arrays
         $addressData = $request->only(['logradouro', 'numero', 'complemento', 'bairro', 'cep', 'cidade', 'uf', 'pais']);
@@ -78,9 +67,9 @@ class CompanyController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Company $company)
+    public function update(\App\Http\Requests\StoreCompanyRequest $request, Company $company)
     {
-        // Validation would go here
+        $validated = $request->validated();
         $addressData = $request->only(['logradouro', 'numero', 'complemento', 'bairro', 'cep', 'cidade', 'uf', 'pais']);
         $companyData = $request->except(['logradouro', 'numero', 'complemento', 'bairro', 'cep', 'cidade', 'uf', 'pais', '_method', '_token']);
 

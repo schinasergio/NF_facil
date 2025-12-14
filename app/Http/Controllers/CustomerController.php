@@ -35,24 +35,16 @@ class CustomerController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(\App\Http\Requests\StoreCustomerRequest $request)
     {
-        $validated = $request->validate([
-            'razao_social' => 'required|string|max:255',
-            'cpf_cnpj' => 'required|string|max:18|unique:customers,cpf_cnpj',
-            'email' => 'nullable|email',
-            'indicador_ie' => 'required|string',
-            // Address
-            'logradouro' => 'required|string',
-            'numero' => 'required|string',
-            'bairro' => 'required|string',
-            'cep' => 'required|string|max:10',
-            'cidade' => 'required|string',
-            'uf' => 'required|string|max:2',
-        ]);
+        $validated = $request->validated();
+
+        $user = \Illuminate\Support\Facades\Auth::user();
+        $company = $user->companies()->firstOrFail();
 
         $addressData = $request->only(['logradouro', 'numero', 'complemento', 'bairro', 'cep', 'cidade', 'uf', 'pais']);
         $customerData = $request->except(['logradouro', 'numero', 'complemento', 'bairro', 'cep', 'cidade', 'uf', 'pais', '_token']);
+        $customerData['company_id'] = $company->id;
 
         $this->customerService->createCustomer($customerData, $addressData);
 
@@ -78,9 +70,9 @@ class CustomerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Customer $customer)
+    public function update(\App\Http\Requests\StoreCustomerRequest $request, Customer $customer)
     {
-        // Add validation
+        $validated = $request->validated();
         $addressData = $request->only(['logradouro', 'numero', 'complemento', 'bairro', 'cep', 'cidade', 'uf', 'pais']);
         $customerData = $request->except(['logradouro', 'numero', 'complemento', 'bairro', 'cep', 'cidade', 'uf', 'pais', '_token', '_method']);
 

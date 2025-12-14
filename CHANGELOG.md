@@ -2,6 +2,17 @@
 
 ## [Unreleased](https://github.com/laravel/laravel/compare/v12.11.0...12.x)
 
+## [v0.13.0] - 2025-12-14
+### Added
+- FormRequest classes for strict validation (Company, Customer, Product, NFe, Correction, Inutilization).
+- Structured logging in `NFeService` and `InutilizationService`.
+- Doxygen documentation for Services and Requests.
+
+### Changed
+- Controllers updated to use FormRequests.
+- `InutilizationService` now uses `Company` relationship for Certificate access.
+- Tests updated to support strict validation and data integrity.
+
 ## [v0.12.0] - 2025-12-14
 ### Added
 - Implemented **Reports** module.

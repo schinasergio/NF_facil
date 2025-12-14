@@ -35,17 +35,9 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(\App\Http\Requests\StoreProductRequest $request)
     {
-        $validated = $request->validate([
-            'nome' => 'required|string|max:255',
-            'codigo_sku' => 'nullable|string|max:255',
-            'ncm' => 'required|string|size:8',
-            'cest' => 'nullable|string|max:7',
-            'unidade' => 'required|string|max:10',
-            'preco_venda' => 'required|numeric|min:0',
-            'origem' => 'required|integer',
-        ]);
+        $validated = $request->validated();
 
         $this->productService->createProduct($validated);
 
@@ -71,17 +63,9 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Product $product)
+    public function update(\App\Http\Requests\StoreProductRequest $request, Product $product)
     {
-        $validated = $request->validate([
-            'nome' => 'required|string|max:255',
-            'codigo_sku' => 'nullable|string|max:255',
-            'ncm' => 'required|string|size:8',
-            'cest' => 'nullable|string|max:7',
-            'unidade' => 'required|string|max:10',
-            'preco_venda' => 'required|numeric|min:0',
-            'origem' => 'required|integer',
-        ]);
+        $validated = $request->validated();
 
         $this->productService->updateProduct($product, $validated);
 

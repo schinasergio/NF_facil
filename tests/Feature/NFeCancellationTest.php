@@ -24,7 +24,7 @@ class NFeCancellationTest extends TestCase
         // 1. Setup Data
         $address = \App\Models\Address::create(['logradouro' => 'L', 'numero' => '1', 'bairro' => 'B', 'cep' => '1', 'cidade' => 'C', 'uf' => 'UF', 'pais' => 'P']);
         $company = \App\Models\Company::create(['razao_social' => 'A', 'cnpj' => '12345678000199', 'address_id' => $address->id, 'regime_tributario' => '1', 'ie' => '1']);
-        $customer = \App\Models\Customer::create(['razao_social' => 'C', 'cpf_cnpj' => '11122233344', 'address_id' => $address->id]);
+        $customer = \App\Models\Customer::create(['razao_social' => 'C', 'cpf_cnpj' => '11122233344', 'address_id' => $address->id, 'company_id' => $company->id]);
 
         $nfe = \App\Models\Nfe::create([
             'company_id' => $company->id,
@@ -55,7 +55,7 @@ class NFeCancellationTest extends TestCase
 
         // 3. Request
         $response = $this->post(route('nfe.cancel', $nfe), [
-            'justificativa' => 'Erro de emissão detectado no valor'
+            'justification' => 'Erro de emissão detectado no valor'
         ]);
 
         // 4. Assert
@@ -72,7 +72,7 @@ class NFeCancellationTest extends TestCase
     {
         $address = \App\Models\Address::create(['logradouro' => 'L', 'numero' => '1', 'bairro' => 'B', 'cep' => '1', 'cidade' => 'C', 'uf' => 'UF', 'pais' => 'P']);
         $company = \App\Models\Company::create(['razao_social' => 'A', 'cnpj' => '12345678000199', 'address_id' => $address->id, 'regime_tributario' => '1', 'ie' => '1']);
-        $customer = \App\Models\Customer::create(['razao_social' => 'C', 'cpf_cnpj' => '11122233344', 'address_id' => $address->id]);
+        $customer = \App\Models\Customer::create(['razao_social' => 'C', 'cpf_cnpj' => '11122233344', 'address_id' => $address->id, 'company_id' => $company->id]);
 
         $nfe = \App\Models\Nfe::create([
             'company_id' => $company->id,
@@ -92,10 +92,10 @@ class NFeCancellationTest extends TestCase
         });
 
         $response = $this->post(route('nfe.cancel', $nfe), [
-            'justificativa' => 'Erro de emissão detectado no valor'
+            'justification' => 'Erro de emissão detectado no valor'
         ]);
 
         $response->assertRedirect();
-        $response->assertSessionHasErrors('error');
+        $response->assertSessionHas('error');
     }
 }

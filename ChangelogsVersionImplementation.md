@@ -2,6 +2,15 @@
 
 This document records the summary of implemented features and modules for the NF-e Emitter project.
 
+## [v0.13.0] - Phase 4: Refactoring & Hardening
+- **Date**: 2025-12-14
+- **Branch**: dev/RefactoringHardening
+- **Commit**: Pending
+- **Changes**:
+  - Extracted validation to FormRequests.
+  - Implemented structured logging.
+  - Added Doxygen documentation.
+
 ## [v0.12.0] - Phase 3: Reports
 **Timestamp:** 2025-12-14 02:45:00 -03:00
 **Branch:** `dev/ReportImplementation`

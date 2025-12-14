@@ -41,7 +41,8 @@ class NFeTransmissionTest extends TestCase
             'razao_social' => 'Destinatario Ltda',
             'cpf_cnpj' => '11122233344',
             'address_id' => $address->id,
-            'indicador_ie' => '9'
+            'indicador_ie' => '9',
+            'company_id' => $company->id
         ]);
 
         // Mock Certificate path on company/relation usually needs actual file or mock Storage

@@ -32,14 +32,9 @@ class NFeController extends Controller
     /**
      * Generate NFe.
      */
-    public function store(Request $request)
+    public function store(\App\Http\Requests\StoreNfeRequest $request)
     {
-        $request->validate([
-            'company_id' => 'required|exists:companies,id',
-            'customer_id' => 'required|exists:customers,id',
-            'items' => 'required|array',
-            'items.*.product_id' => 'required|exists:products,id',
-        ]);
+        $request->validated();
 
         $company = Company::findOrFail($request->company_id);
         $customer = Customer::findOrFail($request->customer_id);
@@ -105,11 +100,9 @@ class NFeController extends Controller
             return back()->withErrors(['error' => $e->getMessage()]);
         }
     }
-    public function cancel(Nfe $nfe, Request $request)
+    public function cancel(Nfe $nfe, \App\Http\Requests\CancelNfeRequest $request)
     {
-        $request->validate([
-            'justification' => 'required|min:15'
-        ]);
+        $request->validated();
 
         try {
             $this->nfeService->cancel($nfe, $request->justification);
@@ -124,11 +117,9 @@ class NFeController extends Controller
         return view('nfe.correction', compact('nfe'));
     }
 
-    public function storeCorrection(Nfe $nfe, Request $request)
+    public function storeCorrection(Nfe $nfe, \App\Http\Requests\CorrectionRequest $request)
     {
-        $request->validate([
-            'correction_text' => 'required|min:15'
-        ]);
+        $request->validated();
 
         try {
             $this->nfeService->correction($nfe, $request->correction_text);

@@ -21,14 +21,9 @@ class InutilizationController extends Controller
         return view('nfe.inutilization.create');
     }
 
-    public function store(Request $request)
+    public function store(\App\Http\Requests\InutilizationRequest $request)
     {
-        $request->validate([
-            'serie' => 'required|integer',
-            'numero_inicial' => 'required|integer',
-            'numero_final' => 'required|integer|gte:numero_inicial',
-            'justificativa' => 'required|string|min:15',
-        ]);
+        $request->validated();
 
         // Assuming single company for now, or user belongs to company
         $user = Auth::user();

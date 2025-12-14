@@ -10,10 +10,28 @@ use NFePHP\NFe\Tools;
 use NFePHP\Common\Certificate;
 use NFePHP\Common\Soap\SoapCurl;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use Exception;
 
+/**
+ * Class NFeService
+ * 
+ * Handles NFe generation, signing, transmission, cancellation, and corrections.
+ * Integrates with SEFAZ via NFePHP.
+ * 
+ * @package App\Services\Fiscal
+ */
 class NFeService
 {
+    /**
+     * Generate and Sign a new NFe.
+     *
+     * @param Company  $company  The emitter company.
+     * @param Customer $customer The recipient customer.
+     * @param array    $items    List of items (products).
+     * @return Nfe The created and signed NFe model.
+     * @throws Exception If generation or signing fails.
+     */
     public function generate(Company $company, Customer $customer, array $items): Nfe
     {
         // 1. Load Certificate
@@ -105,7 +123,9 @@ class NFeService
         try {
             $xml = $nfe->getXML(); // Generates XML structure
             $signedXml = $tools->signNFe($xml); // Signs XML
+            Log::info("NFe Generated and Signed", ['company_id' => $company->id, 'customer_id' => $customer->id, 'nNF' => $std->nNF]);
         } catch (\Exception $e) {
+            Log::error("Error generating NFe", ['error' => $e->getMessage(), 'company_id' => $company->id]);
             throw new Exception("Erro ao gerar XML: " . $e->getMessage());
         }
 
@@ -125,6 +145,13 @@ class NFeService
         ]);
     }
 
+    /**
+     * Transmit the NFe to SEFAZ.
+     *
+     * @param Nfe $nfe The NFe to transmit.
+     * @return array The updated NFe data as array.
+     * @throws Exception If SEFAZ rejects or communication error.
+     */
     public function transmit(Nfe $nfe): array
     {
         // 1. Load Certificate and Tools (Duplicated logic, should refactor in real app)
@@ -147,6 +174,7 @@ class NFeService
 
         // 3. Send to SEFAZ
         try {
+            Log::info("Transmitting NFe", ['nfe_id' => $nfe->id, 'chave' => $nfe->chave]);
             $idLote = substr(str_replace(',', '', number_format(microtime(true) * 1000000, 0, '', '')), 0, 15);
             $resp = $tools->sefazEnviaLote([$xml], $idLote);
 
@@ -159,6 +187,7 @@ class NFeService
                     'status' => 'rejected',
                     'mensagem_sefaz' => "{$std->cStat} - {$std->xMotivo}"
                 ]);
+                Log::error("SEFAZ Batch Rejection", ['nfe_id' => $nfe->id, 'cStat' => $std->cStat, 'xMotivo' => $std->xMotivo]);
                 throw new Exception("Erro SEFAZ: {$std->cStat} - {$std->xMotivo}");
             }
 
@@ -170,6 +199,7 @@ class NFeService
             $stdProt = $st->toStd($protocolo);
 
             if ($stdProt->cStat != 104) { // 104 = Processed
+                Log::error("SEFAZ Receipt Processing Error", ['nfe_id' => $nfe->id, 'cStat' => $stdProt->cStat]);
                 throw new Exception("Lote não processado ainda: {$stdProt->cStat} - {$stdProt->xMotivo}");
             }
 
@@ -183,21 +213,32 @@ class NFeService
                     'mensagem_sefaz' => 'Autorizado o uso da NF-e',
                     'data_recebimento' => now(),
                 ]);
+                Log::info("NFe Authorized", ['nfe_id' => $nfe->id, 'protocolo' => $protEvent->nProt]);
             } else {
                 $nfe->update([
                     'status' => 'rejected',
                     'mensagem_sefaz' => "{$protEvent->cStat} - {$protEvent->xMotivo}"
                 ]);
+                Log::warning("NFe Rejected", ['nfe_id' => $nfe->id, 'cStat' => $protEvent->cStat, 'xMotivo' => $protEvent->xMotivo]);
             }
 
             return $nfe->toArray();
 
         } catch (\Exception $e) {
             // Log error
+            Log::error("Exception transmitting NFe", ['nfe_id' => $nfe->id, 'error' => $e->getMessage()]);
             throw $e;
         }
     }
 
+    /**
+     * Cancel an authorized NFe.
+     *
+     * @param Nfe    $nfe           The NFe to cancel.
+     * @param string $justification Justification for cancellation (min 15 chars).
+     * @return array The updated NFe data.
+     * @throws Exception If status is invalid or SEFAZ rejects.
+     */
     public function cancel(Nfe $nfe, string $justification): array
     {
         // 1. Initial Checks
@@ -213,6 +254,7 @@ class NFeService
 
         // 3. Send Cancellation Event
         try {
+            Log::info("Canceling NFe", ['nfe_id' => $nfe->id, 'justification' => $justification]);
             $chave = $nfe->chave;
             $nProt = $nfe->protocolo;
             $response = $tools->sefazCancela($chave, $justification, $nProt);
@@ -226,16 +268,27 @@ class NFeService
                     'status' => 'canceled',
                     'mensagem_sefaz' => 'Cancelamento homologado'
                 ]);
+                Log::info("NFe Canceled Successfully", ['nfe_id' => $nfe->id]);
                 return $nfe->toArray();
             } else {
+                Log::error("NFe Cancellation Failed", ['nfe_id' => $nfe->id, 'cStat' => $std->infEvento->cStat]);
                 throw new Exception("Erro ao cancelar: {$std->infEvento->cStat} - {$std->infEvento->xMotivo}");
             }
 
         } catch (\Exception $e) {
+            Log::error("Exception canceling NFe", ['nfe_id' => $nfe->id, 'error' => $e->getMessage()]);
             throw new Exception("Erro no Cancelamento: " . $e->getMessage());
         }
     }
 
+    /**
+     * Send a Correction Letter (CC-e) for an NFe.
+     *
+     * @param Nfe    $nfe            The NFe to correct.
+     * @param string $correctionData The correction text (min 15 chars).
+     * @return array Result with status and message.
+     * @throws Exception If status is invalid or SEFAZ rejects.
+     */
     public function correction(Nfe $nfe, string $correctionData): array
     {
         // 1. Initial Checks
@@ -251,6 +304,7 @@ class NFeService
 
         // 3. Send CC-e Event
         try {
+            Log::info("Sending CC-e", ['nfe_id' => $nfe->id]);
             $chave = $nfe->chave;
             $nSeqEvento = 1; // Simplification: assuming first correction. In real app, query max nSeqEvento from DB.
 
@@ -263,16 +317,25 @@ class NFeService
             if ($std->infEvento->cStat == 135) {
                 // We don't change NFe status, just log/notify. 
                 // Optionally save event XML.
+                Log::info("CC-e Linked Successfully", ['nfe_id' => $nfe->id]);
                 return ['status' => 'corrected', 'message' => 'Carta de Correção vinculada com sucesso.'];
             } else {
+                Log::error("CC-e Failed", ['nfe_id' => $nfe->id, 'cStat' => $std->infEvento->cStat]);
                 throw new Exception("Erro na CC-e: {$std->infEvento->cStat} - {$std->infEvento->xMotivo}");
             }
 
         } catch (\Exception $e) {
+            Log::error("Exception in CC-e", ['nfe_id' => $nfe->id, 'error' => $e->getMessage()]);
             throw new Exception("Erro na Carta de Correção: " . $e->getMessage());
         }
     }
 
+    /**
+     * Initialize NFePHP Tools instance.
+     *
+     * @param Company $company The company to use.
+     * @return Tools Configured Tools instance.
+     */
     private function getTools(Company $company): Tools
     {
         $pfxContent = Storage::get($company->certificate->path);

@@ -45,7 +45,8 @@ class NFeTest extends TestCase
             'razao_social' => 'Destinatario Ltda',
             'cpf_cnpj' => '11122233344',
             'address_id' => $address->id,
-            'indicador_ie' => '9'
+            'indicador_ie' => '9',
+            'company_id' => $company->id
         ]);
 
         $product = \App\Models\Product::create([
@@ -75,7 +76,7 @@ class NFeTest extends TestCase
             'company_id' => $company->id,
             'customer_id' => $customer->id,
             'items' => [
-                ['product_id' => $product->id]
+                ['product_id' => $product->id, 'quantidade' => 1]
             ]
         ]);
 

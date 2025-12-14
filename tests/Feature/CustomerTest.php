@@ -36,13 +36,17 @@ class CustomerTest extends TestCase
             'pais' => 'Brasil',
         ];
 
-        $response = $this->post(route('customers.store'), $data);
+        $user = \App\Models\User::factory()->create();
+        $company = \App\Models\Company::factory()->create(['user_id' => $user->id]);
+
+        $response = $this->actingAs($user)->post(route('customers.store'), $data);
 
         $response->assertRedirect(route('customers.index'));
 
         $this->assertDatabaseHas('customers', [
             'cpf_cnpj' => '11.111.111/0001-11',
             'razao_social' => 'Cliente Exemplo Ltda',
+            'company_id' => $company->id
         ]);
 
         $this->assertDatabaseHas('addresses', [

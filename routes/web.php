@@ -3,8 +3,10 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('dashboard');
 });
+
+Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 
 Route::resource('companies', \App\Http\Controllers\CompanyController::class);
 Route::get('companies/{company}/certificate', [\App\Http\Controllers\CertificateController::class, 'create'])->name('companies.certificate.create');

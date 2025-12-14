@@ -2,6 +2,16 @@
 
 ## [Unreleased](https://github.com/laravel/laravel/compare/v12.11.0...12.x)
 
+## [v0.14.0] - 2025-12-14
+### Added
+- **Email Service**: Automated email sending upon NFe authorization using Events/Listeners.
+- **UI/UX**: Premium Dashboard design with Chart.js analytics and gradient cards.
+- **Mailable**: `NFeAuthorizedMail` with XML and DANFE PDF attachments.
+
+### Changed
+- `layouts/app.blade.php`: Complete redesign with Bootstrap 5 and custom CSS.
+- `DanfeService`: Fixed class usage for PDF generation.
+
 ## [v0.13.0] - 2025-12-14
 ### Added
 - FormRequest classes for strict validation (Company, Customer, Product, NFe, Correction, Inutilization).

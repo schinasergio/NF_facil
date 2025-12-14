@@ -2,6 +2,14 @@
 
 This document records the summary of implemented features and modules for the NF-e Emitter project.
 
+## [v0.14.0] - Phase 5: Communication & UI
+- **Date**: 2025-12-14
+- **Branch**: dev/CommunicationUI
+- **Commit**: Pending
+- **Changes**:
+  - Implemented Email Service (Events/Listeners).
+  - Enhanced UI with Chart.js and Premium Bootstrap layout.
+
 ## [v0.13.0] - Phase 4: Refactoring & Hardening
 - **Date**: 2025-12-14
 - **Branch**: dev/RefactoringHardening

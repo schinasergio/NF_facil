@@ -11,6 +11,7 @@ use NFePHP\Common\Certificate;
 use NFePHP\Common\Soap\SoapCurl;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use App\Events\NFeAuthorized;
 use Exception;
 
 /**
@@ -214,6 +215,9 @@ class NFeService
                     'data_recebimento' => now(),
                 ]);
                 Log::info("NFe Authorized", ['nfe_id' => $nfe->id, 'protocolo' => $protEvent->nProt]);
+
+                // Dispatch Event to send Email
+                NFeAuthorized::dispatch($nfe);
             } else {
                 $nfe->update([
                     'status' => 'rejected',

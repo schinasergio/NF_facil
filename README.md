@@ -60,6 +60,7 @@ Sistema emissor de Nota Fiscal Eletrônica (NF-e) desenvolvido em Laravel 11, ut
     - [x] Geração de XML Assinado
     - [x] Envio para SEFAZ (Autorização)
     - [x] Geração de DANFE (PDF)
+    - [x] Cancelamento de NF-e
 
 ## 🧪 Testes
 Para rodar os testes automatizados:

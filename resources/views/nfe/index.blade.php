@@ -23,6 +23,15 @@
                 @endif
                 [<a href="{{ route('nfe.pdf', $nfe) }}">Download PDF</a>]
                 [<a href="{{ route('nfe.view', $nfe) }}" target="_blank">Visualizar PDF</a>]
+                @if($nfe->status === 'authorized')
+                    <form action="{{ route('nfe.cancel', $nfe) }}" method="POST" style="display:inline;"
+                        onsubmit="return confirm('Tem certeza?');">
+                        @csrf
+                        <input type="text" name="justificativa" placeholder="Justificativa (min 15 chars)" required
+                            minlength="15">
+                        <button type="submit" style="color:red;">Cancelar</button>
+                    </form>
+                @endif
                 [<a href="#">Download XML</a>]
                 @if($nfe->mensagem_sefaz)
                     <br><small style="color: gray">SEFAZ: {{ $nfe->mensagem_sefaz }}</small>

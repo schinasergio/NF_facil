@@ -1,0 +1,24 @@
+
+   FAIL  Tests\Feature\NFeCancellationTest
+  ✓ can cancel authorized nfe                                           15.87s  
+  ⨯ cannot cancel unauthorized nfe                                       1.06s  
+  ────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\NFeCancellationTest > cannot cancel unauthorized nf…   
+  Expected response status code [201, 301, 302, 303, 307, 308] but received 419.
+Failed asserting that false is true.
+
+  at tests/Feature/NFeCancellationTest.php:94
+     90▕         $response = $this->post(route('nfe.cancel', $nfe), [
+     91▕             'justificativa' => 'Erro de emissão detectado no valor'
+     92▕         ]);
+     93▕ 
+  ➜  94▕         $response->assertRedirect();
+     95▕         $response->assertSessionHasErrors('error');
+     96▕     }
+     97▕ }
+     98▕
+
+
+  Tests:    1 failed, 1 passed (5 assertions)
+  Duration: 19.11s
+

@@ -2,6 +2,15 @@
 
 This document records the summary of implemented features and modules for the NF-e Emitter project.
 
+## [v0.9.0] - Fiscal: Cancellation
+**Timestamp:** 2025-12-14 00:40:00 -03:00
+**Branch:** `dev/cancellationImplementation`
+**Commit:** `Feat: NFe Cancellation`
+**Changes:**
+-   **Service**: `cancel` method in `NFeService`.
+-   **UI**: Cancellation Form.
+-   **Verification**: `NFeCancellationTest`.
+
 ## [v0.8.0] - Fiscal: DANFE Generation
 **Timestamp:** 2025-12-14 00:20:00 -03:00
 **Branch:** `dev/danfeImplementation`

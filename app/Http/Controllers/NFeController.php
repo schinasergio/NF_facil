@@ -105,4 +105,17 @@ class NFeController extends Controller
             return back()->withErrors(['error' => $e->getMessage()]);
         }
     }
+    public function cancel(Request $request, Nfe $nfe)
+    {
+        $request->validate([
+            'justificativa' => 'required|string|min:15',
+        ]);
+
+        try {
+            $this->nfeService->cancel($nfe, $request->input('justificativa'));
+            return redirect()->back()->with('success', 'NFe Cancelada com Sucesso!');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
+        }
+    }
 }

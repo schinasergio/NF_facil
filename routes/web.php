@@ -11,3 +11,4 @@ Route::get('companies/{company}/certificate', [\App\Http\Controllers\Certificate
 Route::post('companies/{company}/certificate', [\App\Http\Controllers\CertificateController::class, 'store'])->name('companies.certificate.store');
 Route::resource('customers', \App\Http\Controllers\CustomerController::class);
 Route::resource('products', \App\Http\Controllers\ProductController::class);
+Route::resource('nfe', \App\Http\Controllers\NFeController::class);

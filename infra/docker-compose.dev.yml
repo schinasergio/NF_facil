@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: infra/docker/php-fpm/Dockerfile
+    container_name: nfe_app_dev
+    working_dir: /var/www/html
+    volumes:
+      - ../:/var/www/html
+    env_file:
+      - ../.env
+    depends_on:
+      - db
+
+  web:
+    build:
+      context: ..
+      dockerfile: infra/docker/nginx/Dockerfile
+    container_name: nfe_web_dev
+    ports:
+      - "8081:80"
+    depends_on:
+      - app
+    volumes:
+      - ../:/var/www/html
+
+  db:
+    image: mysql:8.0
+    container_name: nfe_db_dev
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: nfe_dev
+      MYSQL_USER: nfe
+      MYSQL_PASSWORD: nfe
+    ports:
+      - "3307:3306"
+    volumes:
+      - nfe_db_dev_data:/var/lib/mysql
+
+volumes:
+  nfe_db_dev_data:

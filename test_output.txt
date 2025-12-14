@@ -1,0 +1,26 @@
+
+   FAIL  Tests\Feature\DanfeTest
+  ⨯ can download danfe                                                  14.51s  
+  ────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\DanfeTest > can download danfe                         
+  Header [Content-Type] was found, but value [text/html; charset=utf-8] does not match [application/pdf].
+Failed asserting that two strings are equal.
+  -'application/pdf'
+  +'text/html; charset=utf-8'
+  
+
+  at tests/Feature/DanfeTest.php:43
+     39▕         }
+     40▕ 
+     41▕         // 4. Assert
+     42▕         $response->assertOk();
+  ➜  43▕         $response->assertHeader('Content-Type', 'application/pdf');
+     44▕         $this->assertTrue(str_contains($response->headers->get('Content-Disposition'), 'attachment; filename=nfe-999.pdf')
+     45▕             || str_contains($response->headers->get('Content-Disposition'), 'attachment; filename="nfe-999.pdf"'));
+     46▕     }
+     47▕ }
+
+
+  Tests:    1 failed (4 assertions)
+  Duration: 17.26s
+

@@ -80,4 +80,29 @@ class NFeController extends Controller
             return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
     }
+
+    public function downloadPdf(Nfe $nfe, \App\Services\Fiscal\DanfeService $danfeService)
+    {
+        try {
+            $pdfContent = $danfeService->generatePdf($nfe);
+            return response()->streamDownload(function () use ($pdfContent) {
+                echo $pdfContent;
+            }, "nfe-{$nfe->numero}.pdf", ['Content-Type' => 'application/pdf']);
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => $e->getMessage()]);
+        }
+    }
+
+    public function viewPdf(Nfe $nfe, \App\Services\Fiscal\DanfeService $danfeService)
+    {
+        try {
+            $pdfContent = $danfeService->generatePdf($nfe);
+            return response($pdfContent, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => "inline; filename=\"nfe-{$nfe->numero}.pdf\""
+            ]);
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => $e->getMessage()]);
+        }
+    }
 }

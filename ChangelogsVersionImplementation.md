@@ -2,6 +2,16 @@
 
 This document records the summary of implemented features and modules for the NF-e Emitter project.
 
+## [v0.8.0] - Fiscal: DANFE Generation
+**Timestamp:** 2025-12-14 00:20:00 -03:00
+**Branch:** `dev/danfeImplementation`
+**Commit:** `Feat: DANFE PDF generation`
+**Changes:**
+-   **Deps**: Installed `nfephp-org/sped-da`.
+-   **Service**: Implemented `DanfeService` (XML -> PDF).
+-   **UI**: Added "Download/Visualizar PDF" buttons.
+-   **Verification**: Verified with `DanfeTest`.
+
 ## [v0.7.0] - Fiscal: SEFAZ Integration
 **Timestamp:** 2025-12-14 00:13:00 -03:00
 **Branch:** `dev/sefazIntegration`

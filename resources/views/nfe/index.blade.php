@@ -21,6 +21,8 @@
                         <button type="submit">Transmitir p/ SEFAZ</button>
                     </form>
                 @endif
+                [<a href="{{ route('nfe.pdf', $nfe) }}">Download PDF</a>]
+                [<a href="{{ route('nfe.view', $nfe) }}" target="_blank">Visualizar PDF</a>]
                 [<a href="#">Download XML</a>]
                 @if($nfe->mensagem_sefaz)
                     <br><small style="color: gray">SEFAZ: {{ $nfe->mensagem_sefaz }}</small>

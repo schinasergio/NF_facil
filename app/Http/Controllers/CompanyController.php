@@ -20,7 +20,7 @@ class CompanyController extends Controller
      */
     public function index()
     {
-        $companies = Company::all();
+        $companies = Company::where('user_id', auth()->id())->get();
         return view('companies.index', compact('companies'));
     }
 
@@ -53,6 +53,7 @@ class CompanyController extends Controller
      */
     public function show(Company $company)
     {
+        $this->authorize('view', $company);
         return view('companies.show', compact('company'));
     }
 
@@ -61,6 +62,7 @@ class CompanyController extends Controller
      */
     public function edit(Company $company)
     {
+        $this->authorize('update', $company);
         return view('companies.edit', compact('company'));
     }
 
@@ -69,6 +71,8 @@ class CompanyController extends Controller
      */
     public function update(\App\Http\Requests\StoreCompanyRequest $request, Company $company)
     {
+        $this->authorize('update', $company);
+
         $validated = $request->validated();
         $addressData = $request->only(['logradouro', 'numero', 'complemento', 'bairro', 'cep', 'cidade', 'uf', 'pais']);
         $companyData = $request->except(['logradouro', 'numero', 'complemento', 'bairro', 'cep', 'cidade', 'uf', 'pais', '_method', '_token']);
@@ -83,6 +87,7 @@ class CompanyController extends Controller
      */
     public function destroy(Company $company)
     {
+        $this->authorize('delete', $company);
         $company->delete();
         return redirect()->route('companies.index')->with('success', 'Empresa removida.');
     }

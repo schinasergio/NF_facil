@@ -2,6 +2,15 @@
 
 This document records the summary of implemented features and modules for the NF-e Emitter project.
 
+## [v0.15.0] - Phase 6: Deployment & Security
+- **Date**: 2025-12-14
+- **Branch**: dev/DeploymentSecurity
+- **Commit**: Pending
+- **Changes**:
+  - Implementation of Authorization Policies (Tenancy).
+  - API Authentication with Sanctum.
+  - Production-ready Docker configuration.
+
 ## [v0.14.0] - Phase 5: Communication & UI
 - **Date**: 2025-12-14
 - **Branch**: dev/CommunicationUI

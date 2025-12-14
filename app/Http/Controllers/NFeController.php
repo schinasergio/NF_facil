@@ -23,10 +23,16 @@ class NFeController extends Controller
      */
     public function create()
     {
-        $companies = Company::all(); // Simplified: Select Emitter
-        $customers = Customer::all();
-        $products = Product::all();
+        $companies = Company::where('user_id', auth()->id())->get();
+        $customers = Customer::whereHas('company', fn($q) => $q->where('user_id', auth()->id()))->get();
+        $products = Product::whereHas('company', fn($q) => $q->where('user_id', auth()->id()))->get(); // Assuming Product has company_id
         return view('nfe.create', compact('companies', 'customers', 'products'));
+    }
+
+    public function show(Nfe $nfe)
+    {
+        $this->authorize('view', $nfe);
+        return view('nfe.show', compact('nfe'));
     }
 
     /**
@@ -62,7 +68,9 @@ class NFeController extends Controller
 
     public function index()
     {
-        $nfes = \App\Models\Nfe::all();
+        $nfes = \App\Models\Nfe::whereHas('company', function ($query) {
+            $query->where('user_id', auth()->id());
+        })->get();
         return view('nfe.index', compact('nfes'));
     }
 

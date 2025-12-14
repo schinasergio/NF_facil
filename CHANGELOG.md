@@ -2,6 +2,13 @@
 
 ## [Unreleased](https://github.com/laravel/laravel/compare/v12.11.0...12.x)
 
+## [v0.15.0] - 2025-12-14
+### Added
+- **API Authentication**: Laravel Sanctum integration with `routes/api.php` and `Api\NFeApiController`.
+- **Docker Production**: Optimized `Dockerfile.prod` and `docker-compose.prod.yml`.
+- **Security**: Tenancy enforcement via `CompanyPolicy`, `CustomerPolicy`, `NfePolicy` and strict `authorize` checks in controllers.
+- **Tests**: `ApiTest` and `PolicyTest` to verify security and API functionality.
+
 ## [v0.14.0] - 2025-12-14
 ### Added
 - **Email Service**: Automated email sending upon NFe authorization using Events/Listeners.

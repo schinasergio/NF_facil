@@ -8,6 +8,7 @@
     "require": {
         "php": "^8.2",
         "laravel/framework": "^12.0",
+        "laravel/sanctum": "^4.2",
         "laravel/tinker": "^2.10.1",
         "nfephp-org/sped-da": "^1.1",
         "nfephp-org/sped-nfe": "^5.2"

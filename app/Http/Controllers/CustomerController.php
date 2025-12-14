@@ -20,7 +20,10 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        $customers = Customer::all();
+        // Get customers belonging to companies owned by the authenticated user
+        $customers = Customer::whereHas('company', function ($query) {
+            $query->where('user_id', auth()->id());
+        })->get();
         return view('customers.index', compact('customers'));
     }
 
@@ -56,6 +59,7 @@ class CustomerController extends Controller
      */
     public function show(Customer $customer)
     {
+        $this->authorize('view', $customer);
         return view('customers.show', compact('customer'));
     }
 
@@ -64,6 +68,7 @@ class CustomerController extends Controller
      */
     public function edit(Customer $customer)
     {
+        $this->authorize('update', $customer);
         return view('customers.edit', compact('customer'));
     }
 
@@ -72,6 +77,8 @@ class CustomerController extends Controller
      */
     public function update(\App\Http\Requests\StoreCustomerRequest $request, Customer $customer)
     {
+        $this->authorize('update', $customer);
+
         $validated = $request->validated();
         $addressData = $request->only(['logradouro', 'numero', 'complemento', 'bairro', 'cep', 'cidade', 'uf', 'pais']);
         $customerData = $request->except(['logradouro', 'numero', 'complemento', 'bairro', 'cep', 'cidade', 'uf', 'pais', '_token', '_method']);
@@ -86,6 +93,7 @@ class CustomerController extends Controller
      */
     public function destroy(Customer $customer)
     {
+        $this->authorize('delete', $customer);
         $customer->delete();
         return redirect()->route('customers.index')->with('success', 'Destinatário removido.');
     }

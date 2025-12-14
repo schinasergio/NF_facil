@@ -2,6 +2,21 @@
 
 ## [Unreleased](https://github.com/laravel/laravel/compare/v12.11.0...12.x)
 
+## [v0.10.0] - 2025-12-14
+### Added
+- Implemented **Carta de Correção Eletrônica (CC-e)** logic in `NFeService`.
+- Added correction form UI and route integration.
+- Added `NFeCorrectionTest` to verify correction flow.
+- Implemented **Inutilização (Number Voiding)** module (Migration, Model, Service, Controller, UI).
+- Added `InutilizationTest` to verify voiding flow.
+
+### Fixed
+- Recreated missing `User` model.
+- Fixed `CustomerFactory` and `AddressFactory` to align with database schema.
+- Added `HasFactory` trait to core models (`Company`, `Customer`, `Address`).
+- Added `user_id` to `companies` table and updated factory to resolve test failures.
+- Restored missing `layouts.app` view for testing environment.
+
 ## [v12.11.0](https://github.com/laravel/laravel/compare/v12.10.1...v12.11.0) - 2025-11-25
 
 * fix: cookies are not available for subdomains by default by [@joostdebruijn](https://github.com/joostdebruijn) in https://github.com/laravel/laravel/pull/6705

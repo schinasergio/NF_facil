@@ -12,6 +12,7 @@ class CompanyFactory extends Factory
     public function definition(): array
     {
         return [
+            'user_id' => \App\Models\User::factory(),
             'address_id' => \App\Models\Address::factory(),
             'razao_social' => $this->faker->company,
             'nome_fantasia' => $this->faker->companySuffix,

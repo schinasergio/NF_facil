@@ -7,7 +7,9 @@
 
 <body>
     <h1>Notas Fiscais Emitidas</h1>
-    <a href="{{ route('nfe.create') }}">Nova NFe</a>
+    <a href="{{ route('nfe.create') }}">Nova NFe</a> |
+    <a href="{{ route('nfe.inutilization.create') }}">Inutilizar Numeração</a>
+    <br><br>
     @if(session('success'))
         <div style="color: green">{{ session('success') }}</div>
     @endif

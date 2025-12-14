@@ -1,0 +1,86 @@
+<?php
+
+namespace App\Services\Fiscal;
+
+use App\Models\Company;
+use App\Models\NfeInutilization;
+use NFePHP\NFe\Tools;
+use NFePHP\Common\Certificate;
+use Illuminate\Support\Facades\Storage;
+use Exception;
+
+class InutilizationService
+{
+    private function getTools(Company $company): Tools
+    {
+        $certificate = Certificate::readPfx(
+            Storage::get($company->certificate_path),
+            $company->certificate_password
+        );
+
+        $tools = new Tools(json_encode([
+            "atualizacao" => date('Y-m-d H:i:s'),
+            "tpAmb" => 2, // 1-Produção, 2-Homologação
+            "razaosocial" => $company->razao_social,
+            "siglaUF" => $company->address->uf,
+            "cnpj" => $company->cnpj,
+            "schemes" => "PL_009_V4",
+            "versao" => "4.00",
+            "tokenIBPT" => "AAAAAAA",
+            "CSC" => "GPB0JBWLUR6HWFTVEJ666S9OPZA6M865",
+            "CSCid" => "000002"
+        ]), $certificate);
+
+        $tools->model('55');
+
+        return $tools;
+    }
+
+    public function inutilize(Company $company, int $serie, int $start, int $end, string $justification): array
+    {
+        $tools = $this->getTools($company);
+
+        try {
+            $xml = $tools->sefazInutiliza(
+                $serie,
+                $start,
+                $end,
+                $justification
+            );
+
+            // Parse response
+            $st = new \NFePHP\NFe\Common\Standardize();
+            $std = $st->toStd($xml);
+
+            $status = ($std->infInut->cStat == '102') ? 'authorized' : 'rejected';
+            $protocolo = $std->infInut->nProt ?? null;
+
+            // Save record
+            $inut = NfeInutilization::create([
+                'company_id' => $company->id,
+                'serie' => $serie,
+                'numero_inicial' => $start,
+                'numero_final' => $end,
+                'justificativa' => $justification,
+                'protocolo' => $protocolo,
+                'status' => $status,
+                'xml_path' => "xmls/inut_{$company->id}_{$serie}_{$start}_{$end}.xml"
+            ]);
+
+            Storage::put($inut->xml_path, $xml);
+
+            return [
+                'status' => $status,
+                'message' => $std->infInut->xMotivo,
+                'protocolo' => $protocolo,
+                'record' => $inut
+            ];
+
+        } catch (Exception $e) {
+            return [
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ];
+        }
+    }
+}

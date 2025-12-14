@@ -21,10 +21,15 @@ class NFeCorrectionTest extends TestCase
         parent::setUp();
         // Mock storage to avoid actual file operations
         Storage::fake('local');
+        $this->withoutMiddleware([
+            \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+            \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
+        ]);
     }
 
     public function test_can_access_correction_page()
     {
+        $this->withoutExceptionHandling();
         $user = User::factory()->create();
         $company = Company::factory()->create();
         $nfe = Nfe::create([
@@ -33,7 +38,8 @@ class NFeCorrectionTest extends TestCase
             'status' => 'authorized', // Only authorized can be corrected
             'numero' => 100,
             'serie' => 1,
-            'xml_path' => 'xmls/test.xml'
+            'xml_path' => 'xmls/test.xml',
+            'valor_total' => 100.00
         ]);
 
         $response = $this->actingAs($user)->get(route('nfe.correction', $nfe->id));
@@ -54,7 +60,8 @@ class NFeCorrectionTest extends TestCase
             'serie' => 1,
             'chave' => '35230112345678000199550010000001001000000000',
             'protocolo' => '135230000000000',
-            'xml_path' => 'xmls/test.xml'
+            'xml_path' => 'xmls/test.xml',
+            'valor_total' => 100.00
         ]);
 
         // Mock Service
@@ -83,6 +90,9 @@ class NFeCorrectionTest extends TestCase
             'company_id' => $company->id,
             'customer_id' => Customer::factory()->create(['company_id' => $company->id])->id,
             'status' => 'authorized',
+            'numero' => 102,
+            'serie' => 1,
+            'valor_total' => 100.00
         ]);
 
         $response = $this->actingAs($user)->post(route('nfe.correction.store', $nfe->id), [

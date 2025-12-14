@@ -11,6 +11,11 @@ Route::get('companies/{company}/certificate', [\App\Http\Controllers\Certificate
 Route::post('companies/{company}/certificate', [\App\Http\Controllers\CertificateController::class, 'store'])->name('companies.certificate.store');
 Route::resource('customers', \App\Http\Controllers\CustomerController::class);
 Route::resource('products', \App\Http\Controllers\ProductController::class);
+
+// Inutilization
+Route::get('/nfe/inutilization', [\App\Http\Controllers\InutilizationController::class, 'create'])->name('nfe.inutilization.create');
+Route::post('/nfe/inutilization', [\App\Http\Controllers\InutilizationController::class, 'store'])->name('nfe.inutilization.store');
+
 Route::resource('nfe', \App\Http\Controllers\NFeController::class);
 Route::post('nfe/{nfe}/transmit', [\App\Http\Controllers\NFeController::class, 'transmit'])->name('nfe.transmit');
 Route::get('nfe/{nfe}/pdf', [\App\Http\Controllers\NFeController::class, 'downloadPdf'])->name('nfe.pdf');
@@ -18,3 +23,4 @@ Route::get('nfe/{nfe}/view', [\App\Http\Controllers\NFeController::class, 'viewP
 Route::post('nfe/{nfe}/cancel', [\App\Http\Controllers\NFeController::class, 'cancel'])->name('nfe.cancel');
 Route::get('nfe/{nfe}/correction', [\App\Http\Controllers\NFeController::class, 'correction'])->name('nfe.correction');
 Route::post('nfe/{nfe}/correction', [\App\Http\Controllers\NFeController::class, 'storeCorrection'])->name('nfe.correction.store');
+

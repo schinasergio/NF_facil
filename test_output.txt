@@ -1,26 +1,60 @@
 
-   FAIL  Tests\Feature\DanfeTest
-  ⨯ can download danfe                                                  14.51s  
+   FAIL  Tests\Feature\InutilizationTest
+  ⨯ can access inutilization page                                       16.70s  
+  ⨯ inutilization request success                                        0.37s  
+  ⨯ validation rules                                                     0.91s  
   ────────────────────────────────────────────────────────────────────────────  
-   FAILED  Tests\Feature\DanfeTest > can download danfe                         
-  Header [Content-Type] was found, but value [text/html; charset=utf-8] does not match [application/pdf].
-Failed asserting that two strings are equal.
-  -'application/pdf'
-  +'text/html; charset=utf-8'
-  
+   FAILED  Tests\Feature\InutilizationTest > can access inutilization…  Error   
+  Call to undefined method App\Http\Controllers\NFeController::show()
 
-  at tests/Feature/DanfeTest.php:43
-     39▕         }
-     40▕ 
-     41▕         // 4. Assert
-     42▕         $response->assertOk();
-  ➜  43▕         $response->assertHeader('Content-Type', 'application/pdf');
-     44▕         $this->assertTrue(str_contains($response->headers->get('Content-Disposition'), 'attachment; filename=nfe-999.pdf')
-     45▕             || str_contains($response->headers->get('Content-Disposition'), 'attachment; filename="nfe-999.pdf"'));
-     46▕     }
-     47▕ }
+  at vendor/laravel/framework/src/Illuminate/Routing/ControllerDispatcher.php:46
+     42▕         if (method_exists($controller, 'callAction')) {
+     43▕             return $controller->callAction($method, $parameters);
+     44▕         }
+     45▕ 
+  ➜  46▕         return $controller->{$method}(...array_values($parameters));
+     47▕     }
+     48▕ 
+     49▕     /**
+     50▕      * Resolve the parameters for the controller.
+
+      [2m+46 vendor frames [22m
+  47  tests/Feature/InutilizationTest.php:21
+
+  ────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\InutilizationTest > inutilization r…  QueryException   
+  SQLSTATE[42S22]: Column not found: 1054 Unknown column 'user_id' in 'field list' (Connection: mysql, SQL: insert into `companies` (`address_id`, `razao_social`, `nome_fantasia`, `cnpj`, `ie`, `regime_tributario`, `user_id`, `updated_at`, `created_at`) values (1, Rempel, Bernier and Skiles, LLC, 68206653914747, 754771860, 1, 2, 2025-12-14 04:56:25, 2025-12-14 04:56:25))
+
+  at vendor/laravel/framework/src/Illuminate/Database/Connection.php:826
+    822▕                     $this->getName(), $query, $this->prepareBindings($bindings), $e
+    823▕                 );
+    824▕             }
+    825▕ 
+  ➜ 826▕             throw new QueryException(
+    827▕                 $this->getName(), $query, $this->prepareBindings($bindings), $e
+    828▕             );
+    829▕         }
+    830▕     }
+
+      [2m+17 vendor frames [22m
+  18  tests/Feature/InutilizationTest.php:28
+
+  ────────────────────────────────────────────────────────────────────────────  
+   FAILED  Tests\Feature\InutilizationTest > validation rules                   
+  Session is missing expected key [errors].
+Failed asserting that false is true.
+
+  at tests/Feature/InutilizationTest.php:64
+     60▕             'numero_final' => 99, // Invalid range
+     61▕             'justificativa' => 'Curto' // Too short
+     62▕         ]);
+     63▕ 
+  ➜  64▕         $response->assertSessionHasErrors(['numero_final', 'justificativa']);
+     65▕     }
+     66▕ }
+     67▕
 
 
-  Tests:    1 failed (4 assertions)
-  Duration: 17.26s
+  Tests:    3 failed (1 assertions)
+  Duration: 21.78s
 

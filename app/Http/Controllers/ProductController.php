@@ -1,0 +1,99 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Product;
+use App\Services\Cadastros\ProductService;
+use Illuminate\Http\Request;
+
+class ProductController extends Controller
+{
+    protected $productService;
+
+    public function __construct(ProductService $productService)
+    {
+        $this->productService = $productService;
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $products = Product::all();
+        return view('products.index', compact('products'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        return view('products.create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'nome' => 'required|string|max:255',
+            'codigo_sku' => 'nullable|string|max:255',
+            'ncm' => 'required|string|size:8',
+            'cest' => 'nullable|string|max:7',
+            'unidade' => 'required|string|max:10',
+            'preco_venda' => 'required|numeric|min:0',
+            'origem' => 'required|integer',
+        ]);
+
+        $this->productService->createProduct($validated);
+
+        return redirect()->route('products.index')->with('success', 'Produto cadastrado com sucesso!');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Product $product)
+    {
+        return view('products.show', compact('product'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Product $product)
+    {
+        return view('products.edit', compact('product'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Product $product)
+    {
+        $validated = $request->validate([
+            'nome' => 'required|string|max:255',
+            'codigo_sku' => 'nullable|string|max:255',
+            'ncm' => 'required|string|size:8',
+            'cest' => 'nullable|string|max:7',
+            'unidade' => 'required|string|max:10',
+            'preco_venda' => 'required|numeric|min:0',
+            'origem' => 'required|integer',
+        ]);
+
+        $this->productService->updateProduct($product, $validated);
+
+        return redirect()->route('products.index')->with('success', 'Produto atualizado!');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Product $product)
+    {
+        $this->productService->deleteProduct($product);
+        return redirect()->route('products.index')->with('success', 'Produto removido.');
+    }
+}

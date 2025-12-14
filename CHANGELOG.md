@@ -2,6 +2,12 @@
 
 ## [Unreleased](https://github.com/laravel/laravel/compare/v12.11.0...12.x)
 
+## [v0.16.0] - 2025-12-14
+### Added
+- **Automation**: GitHub Actions CI workflow for automated testing (`ci.yml`).
+- **Documentation**: API Documentation generated via `dedoc/scramble`.
+- **Manual**: Comprehensive `README.md` with installation and usage guides.
+
 ## [v0.15.0] - 2025-12-14
 ### Added
 - **API Authentication**: Laravel Sanctum integration with `routes/api.php` and `Api\NFeApiController`.

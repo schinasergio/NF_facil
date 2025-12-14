@@ -2,6 +2,15 @@
 
 This document records the summary of implemented features and modules for the NF-e Emitter project.
 
+## [v0.16.0] - Phase 7: Automation & Documentation
+- **Date**: 2025-12-14
+- **Branch**: dev/Automation_and_Documentation
+- **Commit**: Pending
+- **Changes**:
+  - CI/CD Pipeline (GitHub Actions).
+  - API Documentation (Scramble).
+  - Updated Project Documentation (README).
+
 ## [v0.15.0] - Phase 6: Deployment & Security
 - **Date**: 2025-12-14
 - **Branch**: dev/DeploymentSecurity

@@ -18,6 +18,9 @@ class Nfe extends Model
         'xml_path',
         'status',
         'valor_total',
+        'protocolo',
+        'mensagem_sefaz',
+        'data_recebimento',
     ];
 
     public function company(): BelongsTo

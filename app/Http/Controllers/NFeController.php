@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Company;
 use App\Models\Customer;
+use App\Models\Nfe;
 use App\Models\Product;
 use App\Services\Fiscal\NFeService;
 use Illuminate\Http\Request;
@@ -68,5 +69,15 @@ class NFeController extends Controller
     {
         $nfes = \App\Models\Nfe::all();
         return view('nfe.index', compact('nfes'));
+    }
+
+    public function transmit(Nfe $nfe)
+    {
+        try {
+            $this->nfeService->transmit($nfe);
+            return redirect()->back()->with('success', "NFe Transmitida! Status: {$nfe->status}");
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
+        }
     }
 }

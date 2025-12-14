@@ -124,4 +124,77 @@ class NFeService
             'valor_total' => $valorTotal,
         ]);
     }
+
+    public function transmit(Nfe $nfe): array
+    {
+        // 1. Load Certificate and Tools (Duplicated logic, should refactor in real app)
+        $company = $nfe->company;
+        $pfxContent = Storage::get($company->certificate->path);
+        $certificate = Certificate::readPfx($pfxContent, $company->certificate->password);
+
+        $tools = new Tools(json_encode([
+            "atualizacao" => "2023-01-01 00:00:00",
+            "tpAmb" => 2,
+            "razaosocial" => $company->razao_social,
+            "cnpj" => $company->cnpj,
+            "siglaUF" => $company->address->uf,
+            "schemes" => "PL_009_V4",
+            "versao" => "4.00",
+        ]), $certificate);
+
+        // 2. Load signed XML
+        $xml = Storage::get($nfe->xml_path);
+
+        // 3. Send to SEFAZ
+        try {
+            $idLote = substr(str_replace(',', '', number_format(microtime(true) * 1000000, 0, '', '')), 0, 15);
+            $resp = $tools->sefazEnviaLote([$xml], $idLote);
+
+            $st = new \NFePHP\NFe\Common\Standardize();
+            $std = $st->toStd($resp);
+
+            if ($std->cStat != 103) { // 103 = Batch Received
+                // Error handling
+                $nfe->update([
+                    'status' => 'rejected',
+                    'mensagem_sefaz' => "{$std->cStat} - {$std->xMotivo}"
+                ]);
+                throw new Exception("Erro SEFAZ: {$std->cStat} - {$std->xMotivo}");
+            }
+
+            $recibo = $std->infRec->nRec;
+
+            // 4. Consult Receipt (Simplified synchronous wait for POC)
+            sleep(2); // Wait a bit for processing
+            $protocolo = $tools->sefazConsultaRecibo($recibo);
+            $stdProt = $st->toStd($protocolo);
+
+            if ($stdProt->cStat != 104) { // 104 = Processed
+                throw new Exception("Lote não processado ainda: {$stdProt->cStat} - {$stdProt->xMotivo}");
+            }
+
+            // Check final status of the Note
+            $protEvent = $stdProt->protNFe->infProt;
+
+            if ($protEvent->cStat == 100) { // Authorized
+                $nfe->update([
+                    'status' => 'authorized',
+                    'protocolo' => $protEvent->nProt,
+                    'mensagem_sefaz' => 'Autorizado o uso da NF-e',
+                    'data_recebimento' => now(),
+                ]);
+            } else {
+                $nfe->update([
+                    'status' => 'rejected',
+                    'mensagem_sefaz' => "{$protEvent->cStat} - {$protEvent->xMotivo}"
+                ]);
+            }
+
+            return $nfe->toArray();
+
+        } catch (\Exception $e) {
+            // Log error
+            throw $e;
+        }
+    }
 }

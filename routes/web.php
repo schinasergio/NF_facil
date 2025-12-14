@@ -8,6 +8,10 @@ Route::get('/', function () {
 
 Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 
+// Report Routes
+Route::get('/reports', [\App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
+Route::get('/reports/export', [\App\Http\Controllers\ReportController::class, 'exportCsv'])->name('reports.export');
+
 Route::resource('companies', \App\Http\Controllers\CompanyController::class);
 Route::get('companies/{company}/certificate', [\App\Http\Controllers\CertificateController::class, 'create'])->name('companies.certificate.create');
 Route::post('companies/{company}/certificate', [\App\Http\Controllers\CertificateController::class, 'store'])->name('companies.certificate.store');

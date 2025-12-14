@@ -2,6 +2,24 @@
 
 This document records the summary of implemented features and modules for the NF-e Emitter project.
 
+## [v0.12.0] - Phase 3: Reports
+**Timestamp:** 2025-12-14 02:45:00 -03:00
+**Branch:** `dev/ReportImplementation`
+**Commit:** `Feat: Reports implementation`
+**Changes:**
+-   **Backend**: `ReportController`, `ReportService` (Query Builder, CSV logic).
+-   **UI**: Reports Index (Filters + Table + CSV Export).
+-   **Verification**: `ReportTest`.
+
+## [v0.11.0] - Phase 3: Dashboard
+**Timestamp:** 2025-12-14 02:30:00 -03:00
+**Branch:** `dev/DashboardImplementation`
+**Commit:** `Feat: Dashboard implementation`
+**Changes:**
+-   **Controller**: `DashboardController` with aggregated statistics and Doxygen docs.
+-   **UI**: Dashboard view with Card Widgets and Recent Activity Table.
+-   **Verification**: `DashboardTest` verified accurate counting logic.
+
 ## [v0.10.0] - Fiscal: CC-e & Inutilização
 **Timestamp:** 2025-12-14 02:00:00 -03:00
 **Branch:** `dev/CCeImplementation`

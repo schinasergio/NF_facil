@@ -2,6 +2,21 @@
 
 ## [Unreleased](https://github.com/laravel/laravel/compare/v12.11.0...12.x)
 
+## [v0.12.0] - 2025-12-14
+### Added
+- Implemented **Reports** module.
+- Added `ReportController` and `ReportService` with Doxygen docs.
+- Added reports view with filtering (Date, Status, Customer) and CSV export.
+- Added `ReportTest` to verify filter logic and CSV content.
+
+## [v0.11.0] - 2025-12-14
+### Added
+- Implemented **Dashboard** module.
+- Added `DashboardController` with properly Doxygen-documented methods.
+- Added `dashboard` view with statistics (Authorized, Canceled, Pending, Volume) and Recent Activity.
+- Added `DashboardTest` for access and stats verification.
+- Added `/dashboard` route and updated root redirect.
+
 ## [v0.10.0] - 2025-12-14
 ### Added
 - Implemented **Carta de Correção Eletrônica (CC-e)** logic in `NFeService`.

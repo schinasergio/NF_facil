@@ -13,7 +13,15 @@
     @endif
     <ul>
         @foreach($companies as $company)
-            <li>{{ $company->razao_social }} ({{ $company->cnpj }})</li>
+            <li>
+                {{ $company->razao_social }} ({{ $company->cnpj }})
+                - <a href="{{ route('companies.certificate.create', $company) }}">
+                    {{ $company->certificate ? 'Atualizar Certificado' : 'Upload Certificado' }}
+                </a>
+                @if($company->certificate)
+                    <span style="color: green">[Válido até {{ $company->certificate->expires_at->format('d/m/Y') }}]</span>
+                @endif
+            </li>
         @endforeach
     </ul>
 </body>

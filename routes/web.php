@@ -7,5 +7,7 @@ Route::get('/', function () {
 });
 
 Route::resource('companies', \App\Http\Controllers\CompanyController::class);
+Route::get('companies/{company}/certificate', [\App\Http\Controllers\CertificateController::class, 'create'])->name('companies.certificate.create');
+Route::post('companies/{company}/certificate', [\App\Http\Controllers\CertificateController::class, 'store'])->name('companies.certificate.store');
 Route::resource('customers', \App\Http\Controllers\CustomerController::class);
 Route::resource('products', \App\Http\Controllers\ProductController::class);

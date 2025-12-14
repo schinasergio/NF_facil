@@ -31,6 +31,7 @@
                             minlength="15">
                         <button type="submit" style="color:red;">Cancelar</button>
                     </form>
+                    [<a href="{{ route('nfe.correction', $nfe) }}">Carta de Correção</a>]
                 @endif
                 [<a href="#">Download XML</a>]
                 @if($nfe->mensagem_sefaz)

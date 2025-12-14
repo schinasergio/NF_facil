@@ -16,3 +16,5 @@ Route::post('nfe/{nfe}/transmit', [\App\Http\Controllers\NFeController::class, '
 Route::get('nfe/{nfe}/pdf', [\App\Http\Controllers\NFeController::class, 'downloadPdf'])->name('nfe.pdf');
 Route::get('nfe/{nfe}/view', [\App\Http\Controllers\NFeController::class, 'viewPdf'])->name('nfe.view');
 Route::post('nfe/{nfe}/cancel', [\App\Http\Controllers\NFeController::class, 'cancel'])->name('nfe.cancel');
+Route::get('nfe/{nfe}/correction', [\App\Http\Controllers\NFeController::class, 'correction'])->name('nfe.correction');
+Route::post('nfe/{nfe}/correction', [\App\Http\Controllers\NFeController::class, 'storeCorrection'])->name('nfe.correction.store');

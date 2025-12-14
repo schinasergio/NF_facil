@@ -2,6 +2,16 @@
 
 This document records the summary of implemented features and modules for the NF-e Emitter project.
 
+## [v0.10.0] - Fiscal: CC-e
+**Timestamp:** 2025-12-14 01:30:00 -03:00
+**Branch:** `dev/CCeImplementation`
+**Commit:** `Feat: NFe CC-e Implementation`
+**Changes:**
+-   **Service**: Implemented `correction` method in `NFeService`.
+-   **UI**: Correction Form (`nfe.correction`) and Link in Index.
+-   **Verification**: `NFeCorrectionTest` (created and passed).
+-   **Fixes**: Recreated missing `User` model; Fixed `CustomerFactory`, `AddressFactory` and `HasFactory` traits.
+
 ## [v0.9.0] - Fiscal: Cancellation
 **Timestamp:** 2025-12-14 00:40:00 -03:00
 **Branch:** `dev/cancellationImplementation`

@@ -105,17 +105,37 @@ class NFeController extends Controller
             return back()->withErrors(['error' => $e->getMessage()]);
         }
     }
-    public function cancel(Request $request, Nfe $nfe)
+    public function cancel(Nfe $nfe, Request $request)
     {
         $request->validate([
-            'justificativa' => 'required|string|min:15',
+            'justification' => 'required|min:15'
         ]);
 
         try {
-            $this->nfeService->cancel($nfe, $request->input('justificativa'));
-            return redirect()->back()->with('success', 'NFe Cancelada com Sucesso!');
+            $this->nfeService->cancel($nfe, $request->justification);
+            return redirect()->route('nfe.index')->with('success', 'NFe cancelada com sucesso!');
         } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
+    public function correction(Nfe $nfe)
+    {
+        return view('nfe.correction', compact('nfe'));
+    }
+
+    public function storeCorrection(Nfe $nfe, Request $request)
+    {
+        $request->validate([
+            'correction_text' => 'required|min:15'
+        ]);
+
+        try {
+            $this->nfeService->correction($nfe, $request->correction_text);
+            return redirect()->route('nfe.index')->with('success', 'Carta de correção enviada com sucesso!');
+        } catch (\Exception $e) {
+            // Log::error($e ...);
+            return back()->with('error', $e->getMessage())->withInput();
         }
     }
 }

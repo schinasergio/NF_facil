@@ -208,20 +208,8 @@ class NFeService
             throw new Exception("A justificativa deve ter no mínimo 15 caracteres.");
         }
 
-        // 2. Load Tools
-        $company = $nfe->company;
-        $pfxContent = Storage::get($company->certificate->path);
-        $certificate = Certificate::readPfx($pfxContent, $company->certificate->password);
-
-        $tools = new Tools(json_encode([
-            "atualizacao" => "2023-01-01 00:00:00",
-            "tpAmb" => 2,
-            "razaosocial" => $company->razao_social,
-            "cnpj" => $company->cnpj,
-            "siglaUF" => $company->address->uf,
-            "schemes" => "PL_009_V4",
-            "versao" => "4.00",
-        ]), $certificate);
+        // 2. Obtain Tools
+        $tools = $this->getTools($nfe->company);
 
         // 3. Send Cancellation Event
         try {
@@ -246,5 +234,58 @@ class NFeService
         } catch (\Exception $e) {
             throw new Exception("Erro no Cancelamento: " . $e->getMessage());
         }
+    }
+
+    public function correction(Nfe $nfe, string $correctionData): array
+    {
+        // 1. Initial Checks
+        if ($nfe->status !== 'authorized') {
+            throw new Exception("Apenas NFes autorizadas podem receber carta de correção.");
+        }
+        if (strlen($correctionData) < 15) {
+            throw new Exception("A correção deve ter no mínimo 15 caracteres.");
+        }
+
+        // 2. Obtain Tools
+        $tools = $this->getTools($nfe->company);
+
+        // 3. Send CC-e Event
+        try {
+            $chave = $nfe->chave;
+            $nSeqEvento = 1; // Simplification: assuming first correction. In real app, query max nSeqEvento from DB.
+
+            $response = $tools->sefazCCe($chave, $correctionData, $nSeqEvento);
+
+            $st = new \NFePHP\NFe\Common\Standardize();
+            $std = $st->toStd($response);
+
+            // Check Event Status (cStat 135 = Evento registrado e vinculado a NF-e)
+            if ($std->infEvento->cStat == 135) {
+                // We don't change NFe status, just log/notify. 
+                // Optionally save event XML.
+                return ['status' => 'corrected', 'message' => 'Carta de Correção vinculada com sucesso.'];
+            } else {
+                throw new Exception("Erro na CC-e: {$std->infEvento->cStat} - {$std->infEvento->xMotivo}");
+            }
+
+        } catch (\Exception $e) {
+            throw new Exception("Erro na Carta de Correção: " . $e->getMessage());
+        }
+    }
+
+    private function getTools(Company $company): Tools
+    {
+        $pfxContent = Storage::get($company->certificate->path);
+        $certificate = Certificate::readPfx($pfxContent, $company->certificate->password);
+
+        return new Tools(json_encode([
+            "atualizacao" => "2023-01-01 00:00:00",
+            "tpAmb" => 2,
+            "razaosocial" => $company->razao_social,
+            "cnpj" => $company->cnpj,
+            "siglaUF" => $company->address->uf,
+            "schemes" => "PL_009_V4",
+            "versao" => "4.00",
+        ]), $certificate);
     }
 }

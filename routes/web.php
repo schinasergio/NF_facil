@@ -7,3 +7,4 @@ Route::get('/', function () {
 });
 
 Route::resource('companies', \App\Http\Controllers\CompanyController::class);
+Route::resource('customers', \App\Http\Controllers\CustomerController::class);

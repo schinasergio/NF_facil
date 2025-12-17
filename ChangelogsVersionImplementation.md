@@ -2,6 +2,16 @@
 
 This document records the summary of implemented features and modules for the NF-e Emitter project.
 
+## [v1.0.0] - Stable Release
+- **Date**: 2025-12-16
+- **Branch**: main
+- **Commit**: Release v1.0.0
+- **Changes**:
+  - Finalized debugging of Docker environment (504/500 errors).
+  - Optimized NFeController queries for high performance.
+  - Completed all UI/UX refactoring to Tailwind CSS.
+  - Verified full system stability.
+
 ## [v0.16.0] - Phase 7: Automation & Documentation
 - **Date**: 2025-12-14
 - **Branch**: dev/Automation_and_Documentation

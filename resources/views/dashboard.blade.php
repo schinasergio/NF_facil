@@ -1,116 +1,99 @@
-@extends('layouts.app')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Dashboard') }}
+        </h2>
+    </x-slot>
 
-@section('content')
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2 fw-bold text-gray-800">Dashboard</h1>
-    </div>
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-    <!-- Stats Cards -->
-    <div class="row mb-5 g-4">
-        <!-- Authorized Card -->
-        <div class="col-md-3">
-            <div class="card h-100 overflow-hidden text-white bg-gradient-success border-0 shadow">
-                <div class="card-body">
-                    <h6 class="text-uppercase mb-2 opacity-75">Autorizadas</h6>
-                    <h2 class="display-5 fw-bold mb-0">{{ $authorizedCount }}</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                <!-- Authorized -->
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-gray-900">
+                        <div class="text-sm font-medium text-gray-500">Notas Autorizadas</div>
+                        <div class="mt-1 text-3xl font-semibold text-green-600">{{ $authorizedCount }}</div>
+                    </div>
+                </div>
+
+                <!-- Canceled -->
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-gray-900">
+                        <div class="text-sm font-medium text-gray-500">Notas Canceladas</div>
+                        <div class="mt-1 text-3xl font-semibold text-red-600">{{ $canceledCount }}</div>
+                    </div>
+                </div>
+
+                <!-- Pending -->
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-gray-900">
+                        <div class="text-sm font-medium text-gray-500">Pendentes/Rejeitadas</div>
+                        <div class="mt-1 text-3xl font-semibold text-yellow-600">{{ $pendingCount }}</div>
+                    </div>
+                </div>
+
+                <!-- Volume -->
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-gray-900">
+                        <div class="text-sm font-medium text-gray-500">Volume Mensal</div>
+                        <div class="mt-1 text-3xl font-semibold text-blue-600">R$
+                            {{ number_format($monthlyVolume, 2, ',', '.') }}</div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Canceled Card -->
-        <div class="col-md-3">
-            <div class="card h-100 overflow-hidden text-white bg-gradient-danger border-0 shadow">
-                <div class="card-body">
-                    <h6 class="text-uppercase mb-2 opacity-75">Canceladas</h6>
-                    <h2 class="display-5 fw-bold mb-0">{{ $canceledCount }}</h2>
-                </div>
-            </div>
-        </div>
-
-        <!-- Pending Card -->
-        <div class="col-md-3">
-            <div class="card h-100 overflow-hidden text-white bg-gradient-warning border-0 shadow">
-                <div class="card-body">
-                    <h6 class="text-uppercase mb-2 opacity-75">Pendentes</h6>
-                    <h2 class="display-5 fw-bold mb-0">{{ $pendingCount }}</h2>
-                </div>
-            </div>
-        </div>
-
-        <!-- Volume Card -->
-        <div class="col-md-3">
-            <div class="card h-100 overflow-hidden text-white bg-gradient-primary border-0 shadow">
-                <div class="card-body">
-                    <h6 class="text-uppercase mb-2 opacity-75">Volume Total</h6>
-                    <h2 class="display-6 fw-bold mb-0">R$ {{ number_format($monthlyVolume, 2, ',', '.') }}</h2>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Charts and Tables -->
-    <div class="row g-4 mb-4">
-        <!-- Chart Section -->
-        <div class="col-lg-12"> <!-- Full width for valid rendering logic first, or 8/4 split -->
-            <div class="card h-100 border-0 shadow-sm">
-                <div class="card-header bg-white py-3 border-0">
-                    <h5 class="mb-0 fw-bold">Visão Geral de Status</h5>
-                </div>
-                <div class="card-body position-relative" style="height: 300px;">
-                    <canvas id="nfeStatusChart"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <!-- Recent Activity -->
-        <div class="col-12">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 fw-bold">Últimas Emissões</h5>
-                    <a href="{{ route('nfe.index') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">Ver Todas</a>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="bg-light">
+            <!-- Recent Activity -->
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900">
+                    <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Atividade Recente</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="ps-4">Número</th>
-                                    <th>Emissor</th>
-                                    <th>Destinatário</th>
-                                    <th>Valor</th>
-                                    <th>Status</th>
-                                    <th>Data</th>
-                                    <th class="text-end pe-4">Ações</th>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Número</th>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Destinatário</th>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Valor</th>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Status</th>
+                                    <th scope="col"
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Data</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody class="bg-white divide-y divide-gray-200">
                                 @forelse($recentNfes as $nfe)
                                     <tr>
-                                        <td class="ps-4 fw-medium text-dark">{{ $nfe->serie }}/{{ $nfe->numero }}</td>
-                                        <td>{{ Str::limit($nfe->company->razao_social ?? 'N/A', 20) }}</td>
-                                        <td>{{ Str::limit($nfe->customer->razao_social ?? 'N/A', 20) }}</td>
-                                        <td class="fw-bold text-dark">R$ {{ number_format($nfe->valor_total, 2, ',', '.') }}</td>
-                                        <td>
-                                            @if($nfe->status == 'authorized')
-                                                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">Autorizada</span>
-                                            @elseif($nfe->status == 'canceled')
-                                                <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3 py-2">Cancelada</span>
-                                            @elseif($nfe->status == 'rejected')
-                                                <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-3 py-2">Rejeitada</span>
-                                            @else
-                                                <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill px-3 py-2">{{ ucfirst($nfe->status) }}</span>
-                                            @endif
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $nfe->numero }}
                                         </td>
-                                        <td class="text-muted small">{{ $nfe->created_at->format('d/m/Y H:i') }}</td>
-                                        <td class="text-end pe-4">
-                                            <a href="{{ route('nfe.view', $nfe->id) }}" class="btn btn-sm btn-light text-primary fw-medium rounded-pill px-3">Detalhes</a>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            {{ $nfe->customer->razao_social ?? 'N/A' }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">R$
+                                            {{ number_format($nfe->valor_total, 2, ',', '.') }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                                    {{ $nfe->status === 'authorized' ? 'bg-green-100 text-green-800' : '' }}
+                                                    {{ $nfe->status === 'canceled' ? 'bg-red-100 text-red-800' : '' }}
+                                                    {{ $nfe->status === 'rejected' ? 'bg-yellow-100 text-yellow-800' : '' }}
+                                                    {{ $nfe->status === 'created' ? 'bg-blue-100 text-blue-800' : '' }}">
+                                                {{ ucfirst($nfe->status) }}
+                                            </span>
                                         </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {{ $nfe->created_at->format('d/m/Y H:i') }}</td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="text-center py-5 text-muted">Ainda não há notas emitidas.</td>
+                                        <td colspan="5"
+                                            class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Nenhuma
+                                            nota fiscal emitida recentemente.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -120,36 +103,4 @@
             </div>
         </div>
     </div>
-@endsection
-
-@push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const ctx = document.getElementById('nfeStatusChart').getContext('2d');
-        const nfeStatusChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Autorizadas', 'Canceladas', 'Pendentes'],
-                datasets: [{
-                    label: '# de Notas',
-                    data: [{{ $authorizedCount }}, {{ $canceledCount }}, {{ $pendingCount }}],
-                    backgroundColor: [
-                        '#10b981', // Success
-                        '#ef4444', // Danger
-                        '#f59e0b'  // Warning
-                    ],
-                    hoverOffset: 4
-                }]
-            },
-            options: {
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                    }
-                }
-            }
-        });
-    });
-</script>
-@endpush
+</x-app-layout>

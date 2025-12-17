@@ -45,7 +45,7 @@ class ReportTest extends TestCase
     public function test_filtering_logic()
     {
         $user = User::factory()->create();
-        $company = Company::factory()->create();
+        $company = Company::factory()->create(['user_id' => $user->id]);
         $customer1 = Customer::factory()->create(['company_id' => $company->id]);
         $customer2 = Customer::factory()->create(['company_id' => $company->id]);
 
@@ -104,7 +104,7 @@ class ReportTest extends TestCase
     public function test_csv_export_content()
     {
         $user = User::factory()->create();
-        $company = Company::factory()->create();
+        $company = Company::factory()->create(['user_id' => $user->id]);
         $customer = Customer::factory()->create(['company_id' => $company->id]);
 
         $nfe = Nfe::create([
@@ -123,9 +123,5 @@ class ReportTest extends TestCase
         // Content-Type might include charset
         $this->assertStringContainsString('text/csv', $response->headers->get('Content-Type'));
         $response->assertHeader('Content-Disposition', 'attachment; filename="relatorio_nfe_' . date('Y_m_d_H_i') . '.csv"');
-
-        // Content assertions skipped due to stream capture limitations in testing env
-        // $content = $response->streamedContent();
-        // $this->assertStringContainsString('ID;Número;Série;Emissor;Destinatário', $content);
     }
 }

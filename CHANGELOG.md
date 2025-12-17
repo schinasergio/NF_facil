@@ -2,6 +2,19 @@
 
 ## [Unreleased](https://github.com/laravel/laravel/compare/v12.11.0...12.x)
 
+## [v1.0.0] - 2025-12-16
+### Released
+- **First Stable Production Release**.
+- Full NFe Emission Flow (Generation, Customization, Transmission, Cancellation, CC-e).
+- Complete Dashboard with Analytics.
+- Multi-tenant Architecture (Company Isolation).
+- **Performance**: Optimized Database Queries and Server Configuration.
+
+### Fixed
+- **Critical**: Resolved 504 Gateway Timeout on NFe Creation by optimizing subqueries.
+- **Critical**: Resolved 404/500 Errors on Docker/Windows environment.
+- **UI**: Unified all functionality under a responsive Laravel Breeze/Tailwind design.
+
 ## [v0.16.0] - 2025-12-14
 ### Added
 - **Automation**: GitHub Actions CI workflow for automated testing (`ci.yml`).

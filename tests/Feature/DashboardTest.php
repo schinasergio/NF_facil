@@ -45,7 +45,7 @@ class DashboardTest extends TestCase
     public function test_stats_are_accurate()
     {
         $user = User::factory()->create();
-        $company = Company::factory()->create();
+        $company = Company::factory()->create(['user_id' => $user->id]);
 
         // 2 Authorized
         Nfe::create(['company_id' => $company->id, 'customer_id' => Customer::factory()->create(['company_id' => $company->id])->id, 'status' => 'authorized', 'numero' => 1, 'serie' => 1, 'valor_total' => 100.00]);

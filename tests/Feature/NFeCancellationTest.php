@@ -22,8 +22,11 @@ class NFeCancellationTest extends TestCase
     public function test_can_cancel_authorized_nfe()
     {
         // 1. Setup Data
+        $user = \App\Models\User::factory()->create();
+        $this->actingAs($user);
+
         $address = \App\Models\Address::create(['logradouro' => 'L', 'numero' => '1', 'bairro' => 'B', 'cep' => '1', 'cidade' => 'C', 'uf' => 'UF', 'pais' => 'P']);
-        $company = \App\Models\Company::create(['razao_social' => 'A', 'cnpj' => '12345678000199', 'address_id' => $address->id, 'regime_tributario' => '1', 'ie' => '1']);
+        $company = \App\Models\Company::create(['razao_social' => 'A', 'cnpj' => '12345678000199', 'address_id' => $address->id, 'regime_tributario' => '1', 'ie' => '1', 'user_id' => $user->id]);
         $customer = \App\Models\Customer::create(['razao_social' => 'C', 'cpf_cnpj' => '11122233344', 'address_id' => $address->id, 'company_id' => $company->id]);
 
         $nfe = \App\Models\Nfe::create([
@@ -70,8 +73,11 @@ class NFeCancellationTest extends TestCase
 
     public function test_cannot_cancel_unauthorized_nfe()
     {
+        $user = \App\Models\User::factory()->create();
+        $this->actingAs($user);
+
         $address = \App\Models\Address::create(['logradouro' => 'L', 'numero' => '1', 'bairro' => 'B', 'cep' => '1', 'cidade' => 'C', 'uf' => 'UF', 'pais' => 'P']);
-        $company = \App\Models\Company::create(['razao_social' => 'A', 'cnpj' => '12345678000199', 'address_id' => $address->id, 'regime_tributario' => '1', 'ie' => '1']);
+        $company = \App\Models\Company::create(['razao_social' => 'A', 'cnpj' => '12345678000199', 'address_id' => $address->id, 'regime_tributario' => '1', 'ie' => '1', 'user_id' => $user->id]);
         $customer = \App\Models\Customer::create(['razao_social' => 'C', 'cpf_cnpj' => '11122233344', 'address_id' => $address->id, 'company_id' => $company->id]);
 
         $nfe = \App\Models\Nfe::create([

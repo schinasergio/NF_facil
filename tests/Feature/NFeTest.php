@@ -21,7 +21,9 @@ class NFeTest extends TestCase
         $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class);
 
         // 1. Setup Data
-        // 1. Setup Data
+        $user = \App\Models\User::factory()->create();
+        $this->actingAs($user);
+
         $address = \App\Models\Address::create([
             'logradouro' => 'Rua Teste',
             'numero' => '123',
@@ -33,6 +35,7 @@ class NFeTest extends TestCase
         ]);
 
         $company = \App\Models\Company::create([
+            'user_id' => $user->id,
             'razao_social' => 'Emitente Ltda',
             'nome_fantasia' => 'Emitente',
             'cnpj' => '12345678000199',

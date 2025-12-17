@@ -31,7 +31,7 @@ class NFeCorrectionTest extends TestCase
     {
         $this->withoutExceptionHandling();
         $user = User::factory()->create();
-        $company = Company::factory()->create();
+        $company = Company::factory()->create(['user_id' => $user->id]);
         $nfe = Nfe::create([
             'company_id' => $company->id,
             'customer_id' => Customer::factory()->create(['company_id' => $company->id])->id,
@@ -51,7 +51,7 @@ class NFeCorrectionTest extends TestCase
     public function test_correction_request_success()
     {
         $user = User::factory()->create();
-        $company = Company::factory()->create();
+        $company = Company::factory()->create(['user_id' => $user->id]);
         $nfe = Nfe::create([
             'company_id' => $company->id,
             'customer_id' => Customer::factory()->create(['company_id' => $company->id])->id,
@@ -85,7 +85,7 @@ class NFeCorrectionTest extends TestCase
     public function test_correction_validation_min_length()
     {
         $user = User::factory()->create();
-        $company = Company::factory()->create();
+        $company = Company::factory()->create(['user_id' => $user->id]);
         $nfe = Nfe::create([
             'company_id' => $company->id,
             'customer_id' => Customer::factory()->create(['company_id' => $company->id])->id,

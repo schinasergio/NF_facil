@@ -19,8 +19,11 @@ class DanfeTest extends TestCase
         $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class);
 
         // 1. Setup Data
+        $user = \App\Models\User::factory()->create();
+        $this->actingAs($user);
+
         $address = \App\Models\Address::create(['logradouro' => 'L', 'numero' => '1', 'bairro' => 'B', 'cep' => '1', 'cidade' => 'C', 'uf' => 'UF', 'pais' => 'P']);
-        $company = \App\Models\Company::create(['razao_social' => 'A', 'cnpj' => '12345678000199', 'address_id' => $address->id, 'regime_tributario' => '1', 'ie' => '1', 'user_id' => \App\Models\User::factory()->create()->id]);
+        $company = \App\Models\Company::create(['razao_social' => 'A', 'cnpj' => '12345678000199', 'address_id' => $address->id, 'regime_tributario' => '1', 'ie' => '1', 'user_id' => $user->id]);
         $customer = \App\Models\Customer::create(['razao_social' => 'C', 'cpf_cnpj' => '11122233344', 'address_id' => $address->id, 'company_id' => $company->id]);
         $nfe = \App\Models\Nfe::create(['company_id' => $company->id, 'customer_id' => $customer->id, 'numero' => 999, 'serie' => 1, 'status' => 'authorized', 'valor_total' => 100.00, 'xml_path' => 'mock.xml']);
 

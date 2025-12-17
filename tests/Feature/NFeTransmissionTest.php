@@ -19,6 +19,9 @@ class NFeTransmissionTest extends TestCase
 
         // 1. Setup Data
         // Setup Address, Company (with certificate), Customer (manual creation)
+        $user = \App\Models\User::factory()->create();
+        $this->actingAs($user);
+
         $address = \App\Models\Address::create([
             'logradouro' => 'Rua Teste',
             'numero' => '123',
@@ -30,6 +33,7 @@ class NFeTransmissionTest extends TestCase
         ]);
 
         $company = \App\Models\Company::create([
+            'user_id' => $user->id,
             'razao_social' => 'Emitente Ltda',
             'cnpj' => '12345678000199',
             'address_id' => $address->id,

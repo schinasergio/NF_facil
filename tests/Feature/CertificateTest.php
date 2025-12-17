@@ -21,6 +21,9 @@ class CertificateTest extends TestCase
         $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class);
 
         // 1. Setup Data
+        $user = \App\Models\User::factory()->create();
+        $this->actingAs($user);
+
         $address = Address::create([
             'logradouro' => 'Rua Teste',
             'numero' => '123',
@@ -31,6 +34,7 @@ class CertificateTest extends TestCase
             'pais' => 'Brasil'
         ]);
         $company = Company::create([
+            'user_id' => $user->id,
             'address_id' => $address->id,
             'razao_social' => 'Empresa Teste',
             'cnpj' => '12345678000199',

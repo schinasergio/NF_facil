@@ -23,9 +23,14 @@ class NFeController extends Controller
      */
     public function create()
     {
-        $companies = Company::where('user_id', auth()->id())->get();
-        $customers = Customer::whereHas('company', fn($q) => $q->where('user_id', auth()->id()))->get();
-        $products = Product::whereHas('company', fn($q) => $q->where('user_id', auth()->id()))->get(); // Assuming Product has company_id
+        $companyIds = Company::where('user_id', auth()->id())->pluck('id');
+        $companies = Company::whereIn('id', $companyIds)->get();
+
+        $customers = Customer::whereIn('company_id', $companyIds)->get();
+        $products = Product::whereIn('company_id', $companyIds)->get();
+
+        // dd('DEBUG: ALL QUERIES OK');
+
         return view('nfe.create', compact('companies', 'customers', 'products'));
     }
 

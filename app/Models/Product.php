@@ -10,6 +10,7 @@ class Product extends Model
 {
     use HasFactory;
     protected $fillable = [
+        'company_id',
         'nome',
         'codigo_sku',
         'ncm',
@@ -19,4 +20,9 @@ class Product extends Model
         'origem',
         'ativo',
     ];
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
 }

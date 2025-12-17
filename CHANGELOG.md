@@ -2,13 +2,24 @@
 
 ## [Unreleased](https://github.com/laravel/laravel/compare/v12.11.0...12.x)
 
+## [v1.0.1] - 2025-12-17
+### Fixed
+- **Critical**: Resolved "Phantom Company" issue where newly created companies were not associated with the user.
+- **Critical**: Fixed "Duplicate CNPJ" validation error blocking company creation.
+- **UI/UX**: Implemented Input Masks (CNPJ, Phone, CEP) using Alpine.js for Company Create/Edit forms.
+- **UI/UX**: Fixed styling and translation on "Upload Certificate" page.
+- **UI/UX**: Added missing fields (Address, Phone, Email) and masks to Company Edit form.
+- **UI/UX**: Converted "Regime Tributário" to Select input for better usability.
+- **Localization**: Enforced `pt_BR` locale and fixed translation loading issues.
+- **Infrastructure**: Verified and forced Docker volume synchronization for file updates.
+
 ## [v1.0.0] - 2025-12-16
 ### Released
 - **First Stable Production Release**.
 - Full NFe Emission Flow (Generation, Customization, Transmission, Cancellation, CC-e).
 - Complete Dashboard with Analytics.
 - Multi-tenant Architecture (Company Isolation).
-- **Performance**: Optimized Database Queries and Server Configuration.
+-                                                                                                                                       
 
 ### Fixed
 - **Critical**: Resolved 504 Gateway Timeout on NFe Creation by optimizing subqueries.

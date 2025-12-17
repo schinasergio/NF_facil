@@ -42,6 +42,10 @@ class CompanyController extends Controller
         // Split data into company and address arrays
         $addressData = $request->only(['logradouro', 'numero', 'complemento', 'bairro', 'cep', 'cidade', 'uf', 'pais']);
         $companyData = $request->except(['logradouro', 'numero', 'complemento', 'bairro', 'cep', 'cidade', 'uf', 'pais', '_token']);
+        $companyData['user_id'] = auth()->id();
+
+        // DEBUG: Check if ID is captured
+        // dd('Debugging Store:', auth()->user(), auth()->id(), $companyData);
 
         $this->companyService->createCompany($companyData, $addressData);
 

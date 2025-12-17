@@ -51,4 +51,14 @@ class StoreCompanyRequest extends FormRequest
             'pais' => 'nullable|string',
         ];
     }
+    public function messages()
+    {
+        return [
+            'razao_social.required' => 'Razão Social é obrigatória',
+            'cnpj.required' => 'CNPJ é obrigatório',
+            'cnpj.unique' => 'ESTE CNPJ JÁ ESTÁ EM USO (Hardcoded Check)',
+            'regime_tributario.required' => 'Selecione o Regime Tributário',
+            // Add other messages as needed
+        ];
+    }
 }

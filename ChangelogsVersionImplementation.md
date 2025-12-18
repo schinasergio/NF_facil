@@ -2,6 +2,16 @@
 
 This document records the summary of implemented features and modules for the NF-e Emitter project.
 
+## [v1.1.0] - NFS-e Implementation (Alpha)
+- **Date**: 2025-12-18
+- **Branch**: main
+- **Commit**: Feat: NFS-e Architecture and SP Driver
+- **Changes**:
+  - **Architecture**: Defined `NfseDriverInterface` and Factory Pattern.
+  - **Cities**: Implemented `SaoPauloDriver` (XML Construction + Signature).
+  - **UI**: Environment Switcher (Homologation/Production) and NFS-e Form.
+  - **Docs**: Created `NFSE_INTEGRATION_GUIDE.md`.
+
 ## [v1.0.2] - Hotfix: Product Stability & Environment Recovery
 - **Date**: 2025-12-18
 - **Branch**: main

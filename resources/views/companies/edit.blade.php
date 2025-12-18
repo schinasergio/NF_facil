@@ -98,6 +98,33 @@
                                             </option>
                                         </select>
                                     </div>
+
+                                    <!-- Environment Toggle -->
+                                    <div class="mb-4 p-4 rounded-lg border-2"
+                                        x-data="{ env: '{{ old('ambiente', $company->ambiente ?? 2) }}' }"
+                                        :class="env == '1' ? 'bg-red-50 border-red-200' : 'bg-green-50 border-green-200'">
+
+                                        <x-input-label for="ambiente" value="Ambiente de Emissão" class="font-bold" />
+
+                                        <div class="mt-2 flex gap-4">
+                                            <label class="inline-flex items-center">
+                                                <input type="radio" name="ambiente" value="2" x-model="env"
+                                                    class="form-radio text-green-600">
+                                                <span class="ml-2 font-medium text-green-700">Homologação
+                                                    (Testes)</span>
+                                            </label>
+                                            <label class="inline-flex items-center">
+                                                <input type="radio" name="ambiente" value="1" x-model="env"
+                                                    class="form-radio text-red-600">
+                                                <span class="ml-2 font-medium text-red-700">Produção (Valendo!)</span>
+                                            </label>
+                                        </div>
+
+                                        <div x-show="env == '1'"
+                                            class="mt-2 text-sm text-red-600 font-bold animate-pulse">
+                                            ⚠️ CUIDADO: Notas emitidas neste ambiente têm validade fiscal!
+                                        </div>
+                                    </div>
                                     <div class="mb-4">
                                         <x-input-label for="email" value="Email" />
                                         <x-text-input id="email" class="block mt-1 w-full" type="email" name="email"

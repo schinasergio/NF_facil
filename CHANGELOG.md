@@ -2,6 +2,14 @@
 
 ## [Unreleased](https://github.com/laravel/laravel/compare/v12.11.0...12.x)
 
+## [v1.1.0] - NFS-e Alpha Release
+### Added
+- **NFS-e Architecture**: Implemented Custom Driver Pattern (`NfseDriverInterface`) for multi-city support.
+- **Drivers**: Created `SaoPauloDriver` (XML Generation + RSA-SHA1 Signature) and `SantosDriver` (Skeleton).
+- **Service**: Refactors `NfseService` to act as a Factory based on Company IBGE code.
+- **UI**: Added "Emitir NFS-e" flow and Environment Toggle (Homologation/Production).
+- **Documentation**: Added `NFSE_INTEGRATION_GUIDE.md` for developer reference.
+
 ## [v1.0.2] - 2025-12-18
 ### Fixed
 - **Critical**: Resolved 504 Gateway Timeout on Product Creation (Missing `company_id` in `ProductController` / `products` table).

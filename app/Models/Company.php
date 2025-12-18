@@ -22,6 +22,7 @@ class Company extends Model
         'email',
         'telefone',
         'status',
+        'ambiente', // 1=Produção, 2=Homologação
     ];
 
     public function address(): BelongsTo

@@ -10,6 +10,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\InutilizationController;
 use App\Http\Controllers\NFeController;
+use App\Http\Controllers\NfseController;
 
 Route::get('/', function () {
     return redirect()->route('dashboard');
@@ -41,6 +42,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/nfe/inutilization', [InutilizationController::class, 'store'])->name('nfe.inutilization.store');
 
     Route::resource('nfe', NFeController::class);
+    Route::resource('nfse', NfseController::class)->only(['create', 'store']); // NFS-e Routes
+
     Route::post('nfe/{nfe}/transmit', [NFeController::class, 'transmit'])
         ->name('nfe.transmit')
         ->middleware('can:transmit,nfe');

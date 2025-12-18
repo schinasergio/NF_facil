@@ -42,14 +42,18 @@
                             <div>
                                 <x-input-label for="ncm" value="NCM (8 dígitos)" />
                                 <x-text-input id="ncm" class="block mt-1 w-full" type="text" name="ncm"
-                                    :value="old('ncm')" required />
+                                    :value="old('ncm')" required x-data
+                                    x-on:input="$el.value = $el.value.replace(/[^0-9]/g, '').slice(0, 8)"
+                                    placeholder="Apenas números" />
                                 <x-input-error :messages="$errors->get('ncm')" class="mt-2" />
                             </div>
 
                             <div>
                                 <x-input-label for="cest" value="CEST (Opcional)" />
                                 <x-text-input id="cest" class="block mt-1 w-full" type="text" name="cest"
-                                    :value="old('cest')" />
+                                    :value="old('cest')" x-data
+                                    x-on:input="$el.value = $el.value.replace(/[^0-9]/g, '').slice(0, 7)"
+                                    placeholder="Apenas números" />
                                 <x-input-error :messages="$errors->get('cest')" class="mt-2" />
                             </div>
 
@@ -62,8 +66,9 @@
 
                             <div>
                                 <x-input-label for="preco_venda" value="Preço de Venda (R$)" />
-                                <x-text-input id="preco_venda" class="block mt-1 w-full" type="number" step="0.01"
-                                    name="preco_venda" :value="old('preco_venda')" required />
+                                <x-text-input id="preco_venda" class="block mt-1 w-full" type="text" name="preco_venda"
+                                    :value="old('preco_venda')" required x-data
+                                    x-on:input="$el.value = $el.value.replace(/[^0-9.,]/g, '')" placeholder="0.00" />
                                 <x-input-error :messages="$errors->get('preco_venda')" class="mt-2" />
                             </div>
 

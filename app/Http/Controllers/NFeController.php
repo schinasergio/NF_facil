@@ -15,7 +15,9 @@ class NFeController extends Controller
 
     public function __construct(NFeService $nfeService)
     {
+        file_put_contents('/tmp/nfe_debug.log', "NFeController: Constructor Start at " . date('Y-m-d H:i:s') . "\n", FILE_APPEND);
         $this->nfeService = $nfeService;
+        file_put_contents('/tmp/nfe_debug.log', "NFeController: Constructor End\n", FILE_APPEND);
     }
 
     /**
@@ -23,6 +25,7 @@ class NFeController extends Controller
      */
     public function create()
     {
+        file_put_contents('/tmp/nfe_debug.log', "NFeController: Create Start\n", FILE_APPEND);
         $companyIds = Company::where('user_id', auth()->id())->pluck('id');
         $companies = Company::whereIn('id', $companyIds)->get();
 

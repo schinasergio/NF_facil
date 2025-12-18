@@ -20,7 +20,23 @@ class StoreProductRequest extends FormRequest
      */
     public function authorize()
     {
+        file_put_contents('/tmp/request_debug.log', "Request Authorize Reached\n", FILE_APPEND);
         return true;
+    }
+
+    /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'cest' => preg_replace('/[^0-9]/', '', $this->cest),
+            'ncm' => preg_replace('/[^0-9]/', '', $this->ncm),
+            'preco_venda' => str_replace(',', '.', str_replace('.', '', $this->preco_venda)), // PT-BR format fix
+        ]);
+
+        // Debug
+        // file_put_contents('/tmp/request_debug.log', "Sanitized CEST: " . $this->cest . "\n", FILE_APPEND);
     }
 
     /**
@@ -30,6 +46,7 @@ class StoreProductRequest extends FormRequest
      */
     public function rules()
     {
+        file_put_contents('/tmp/request_debug.log', "Request Rules Reached\n", FILE_APPEND);
         return [
             'nome' => 'required|string|max:255',
             'codigo_sku' => 'nullable|string|max:255',

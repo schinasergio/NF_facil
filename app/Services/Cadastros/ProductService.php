@@ -11,6 +11,7 @@ class ProductService
      */
     public function createProduct(array $data): Product
     {
+        file_put_contents('/tmp/product_debug.log', "Data passed to create: " . print_r($data, true), FILE_APPEND);
         return Product::create($data);
     }
 

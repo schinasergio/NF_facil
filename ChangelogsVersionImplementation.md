@@ -2,6 +2,17 @@
 
 This document records the summary of implemented features and modules for the NF-e Emitter project.
 
+## [v1.0.2] - Hotfix: Product Stability & Environment Recovery
+- **Date**: 2025-12-18
+- **Branch**: main
+- **Commit**: Hotfix v1.0.2
+- **Changes**:
+  - **Environment**: Restored critical `.env` configs (APP_KEY, MySQL Driver).
+  - **Database**: Fixed missing `company_id` column in `products` table.
+  - **Backend**: Fixed logic in `ProductController` to inject `company_id`.
+  - **Security**: Fixed 502 Crash (Cookie Overflow) by sanitizing inputs in `StoreProductRequest`.
+  - **Frontend**: Added Real-time Input Masks for Product Fiscal Fields.
+
 ## [v1.0.0] - Stable Release
 - **Date**: 2025-12-16
 - **Branch**: main

@@ -2,6 +2,14 @@
 
 ## [Unreleased](https://github.com/laravel/laravel/compare/v12.11.0...12.x)
 
+## [v1.0.2] - 2025-12-18
+### Fixed
+- **Critical**: Resolved 504 Gateway Timeout on Product Creation (Missing `company_id` in `ProductController` / `products` table).
+- **Critical**: Resolved 502 Bad Gateway on Product Creation (Cookie Session Overflow due to large CEST inputs).
+- **Backend**: Implemented `prepareForValidation` in `StoreProductRequest` to sanitize CEST/NCM inputs (strip non-numerics).
+- **UI/UX**: Added Alpine.js Input Masks to Product Form (NCM, CEST, Price) for immediate visual feedback.
+- **Infrastructure**: Restored `APP_KEY` and Database Connection settings in `.env` after environment reset.
+
 ## [v1.0.1] - 2025-12-17
 ### Fixed
 - **Critical**: Resolved "Phantom Company" issue where newly created companies were not associated with the user.

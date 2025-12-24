@@ -38,7 +38,14 @@ RUN rm -f composer.lock
 RUN composer install --no-dev --optimize-autoloader --no-scripts --prefer-dist
 
 # Permissions
-RUN chown -R www-data:www-data /var/www/html \
+RUN mkdir -p storage/app/public \
+    storage/framework/cache/data \
+    storage/framework/sessions \
+    storage/framework/testing \
+    storage/framework/views \
+    storage/logs \
+    bootstrap/cache \
+    && chown -R www-data:www-data /var/www/html \
     && chmod -R 775 /var/www/html/storage \
     && chmod -R 775 /var/www/html/bootstrap/cache
 

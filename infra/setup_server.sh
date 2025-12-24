@@ -41,10 +41,7 @@ fi
 # 3. Setup Environment Variables
 if [ ! -f ".env" ]; then
     echo "⚙️ Creating .env from .env.example..."
-    cp .env.example .env.production
-    # We might need to inject the production values here if we had them secure
-    # For now, we rely on the user or the committed .env (which shouldn't be there)
-    # OR we assume .env.production is what we want.
+    cp .env.example .env
 fi
 
 # 4. Trigger Deployment

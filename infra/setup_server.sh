@@ -49,4 +49,10 @@ fi
 
 # 4. Trigger Deployment
 echo "🚀 Triggering Deploy Script..."
-bash infra/deploy.sh
+# Ensure docker group permissions apply
+if command -v sg > /dev/null 2>&1; then
+    sg docker -c "bash infra/deploy.sh"
+else
+    # Fallback if sg is missing (rare), try direct run
+    bash infra/deploy.sh
+fi

@@ -26,9 +26,15 @@ echo "🔹 Using Compose command: $COMPOSE_CMD"
 echo "🐳 Building and Starting Containers..."
 $COMPOSE_CMD -f infra/docker-compose.prod.yml up -d --build
 
-# 3. Wait for database to be ready (optional check, or just sleep)
-echo "⏳ Waiting for services to stabilize..."
-sleep 10
+# 3. Wait for database to be ready (DietPi/Pi4 might be slow)
+echo "⏳ Waiting 30s for services to stabilize..."
+sleep 30
+
+# Ensure App Key Exists
+if grep -q "APP_KEY=$" .env || grep -q "APP_KEY=" .env | grep -v "base64"; then
+    echo "🔑 Generating Application Key..."
+    $COMPOSE_CMD -f infra/docker-compose.prod.yml exec -T app php artisan key:generate
+fi
 
 # 4. Run Migrations
 echo "📦 Running Migrations..."

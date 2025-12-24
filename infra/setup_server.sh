@@ -40,9 +40,29 @@ fi
 
 # 3. Setup Environment Variables
 if [ ! -f ".env" ]; then
-    echo "⚙️ Creating .env from .env.example..."
+    echo "⚙️ Creating .env with Production defaults..."
     cp .env.example .env
 fi
+
+# Inject Production Values (Run always to ensure config is correct)
+echo "🔧 Configuring .env for Production..."
+sed -i 's/APP_ENV=local/APP_ENV=production/' .env
+sed -i 's/APP_DEBUG=true/APP_DEBUG=false/' .env
+sed -i 's/DB_CONNECTION=sqlite/DB_CONNECTION=mysql/' .env
+# Enable lines if commented
+sed -i 's/# DB_HOST=127.0.0.1/DB_HOST=db/' .env
+sed -i 's/# DB_PORT=3306/DB_PORT=3306/' .env
+sed -i 's/# DB_DATABASE=laravel/DB_DATABASE=nffacil/' .env
+sed -i 's/# DB_USERNAME=root/DB_USERNAME=nffacil/' .env
+sed -i 's/# DB_PASSWORD=/DB_PASSWORD=secret/' .env
+# Update existing values if not comented
+sed -i 's/DB_HOST=127.0.0.1/DB_HOST=db/' .env
+sed -i 's/DB_DATABASE=laravel/DB_DATABASE=nffacil/' .env
+
+sed -i 's/CACHE_DRIVER=file/CACHE_DRIVER=redis/' .env
+sed -i 's/SESSION_DRIVER=file/SESSION_DRIVER=redis/' .env
+sed -i 's/QUEUE_CONNECTION=sync/QUEUE_CONNECTION=redis/' .env
+sed -i 's/REDIS_HOST=127.0.0.1/REDIS_HOST=redis/' .env
 
 # 4. Trigger Deployment
 echo "🚀 Triggering Deploy Script..."

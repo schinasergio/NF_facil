@@ -25,6 +25,9 @@ else
     exit 1
 fi
 
+echo "🔑 Checking APP_KEY in .env:"
+grep "APP_KEY" "$ENV_FILE"
+
 echo "📂 Checking Log Permissions:"
 $COMPOSE_CMD --env-file $ENV_FILE -f infra/docker-compose.prod.yml exec -T app ls -la storage/logs/
 

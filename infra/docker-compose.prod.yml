@@ -22,6 +22,7 @@ services:
     volumes:
       # We do NOT mount code in prod, but we might verify storage persistence
       - nffacil_storage:/var/www/html/storage
+      - ../../.env:/var/www/html/.env
     depends_on:
       - db
       - redis

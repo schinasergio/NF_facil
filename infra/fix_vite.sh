@@ -23,10 +23,27 @@ else
     exit 1
 fi
 
-echo "🔹 Creating dummy manifest.json..."
-# Create directory and a valid empty manifest to satisfy Laravel
-$COMPOSE_CMD --env-file $ENV_FILE -f infra/docker-compose.prod.yml exec -T app mkdir -p public/build
-$COMPOSE_CMD --env-file $ENV_FILE -f infra/docker-compose.prod.yml exec -T app sh -c 'echo "{}" > public/build/manifest.json'
+echo "🔹 Creating dummy manifest.json with entries..."
+# Create directory
+$COMPOSE_CMD --env-file $ENV_FILE -f infra/docker-compose.prod.yml exec -T app mkdir -p public/build/assets
+
+# Create dummy asset files
+$COMPOSE_CMD --env-file $ENV_FILE -f infra/docker-compose.prod.yml exec -T app touch public/build/assets/app.css
+$COMPOSE_CMD --env-file $ENV_FILE -f infra/docker-compose.prod.yml exec -T app touch public/build/assets/app.js
+
+# Create manifest with mapping
+$COMPOSE_CMD --env-file $ENV_FILE -f infra/docker-compose.prod.yml exec -T app sh -c "cat > public/build/manifest.json <<EOF
+{
+  \"resources/css/app.css\": {
+    \"file\": \"assets/app.css\",
+    \"src\": \"resources/css/app.css\"
+  },
+  \"resources/js/app.js\": {
+    \"file\": \"assets/app.js\",
+    \"src\": \"resources/js/app.js\"
+  }
+}
+EOF"
 
 echo "🧹 Clearing Caches..."
 $COMPOSE_CMD --env-file $ENV_FILE -f infra/docker-compose.prod.yml exec -T app php artisan view:clear

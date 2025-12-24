@@ -1,7 +1,7 @@
 services:
   app:
     build:
-      context: ../../
+      context: ../
       dockerfile: infra/docker/php-fpm/Dockerfile.prod
     image: nffacil-app:latest
     restart: always
@@ -22,14 +22,14 @@ services:
     volumes:
       # We do NOT mount code in prod, but we might verify storage persistence
       - nffacil_storage:/var/www/html/storage
-      - ../../.env:/var/www/html/.env
+      - ../.env:/var/www/html/.env
     depends_on:
       - db
       - redis
 
   web:
     build:
-      context: ../../
+      context: ../
       dockerfile: infra/docker/nginx/Dockerfile.prod
     image: nffacil-nginx:latest
     restart: always

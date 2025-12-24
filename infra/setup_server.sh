@@ -39,6 +39,12 @@ else
 fi
 
 # 3. Setup Environment Variables
+# Check if .env is a directory (bad state from Docker volume mount error) and remove it
+if [ -d ".env" ]; then
+    echo "⚠️  Found directory named .env. Removing..."
+    rm -rf .env
+fi
+
 if [ ! -f ".env" ]; then
     echo "⚙️ Creating .env with Production defaults..."
     cp .env.example .env

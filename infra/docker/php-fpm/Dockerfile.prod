@@ -29,7 +29,12 @@ WORKDIR /var/www/html
 # Copy application code
 COPY . /var/www/html
 
+# Allow git operations if needed (fix dubious ownership)
+RUN git config --global --add safe.directory /var/www/html
+
 # Install dependencies
+# Remove composer.lock to force resolution from composer.json (Fixes out-of-sync lock file)
+RUN rm -f composer.lock
 RUN composer install --no-dev --optimize-autoloader --no-scripts --prefer-dist
 
 # Permissions

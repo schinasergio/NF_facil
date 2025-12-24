@@ -1,0 +1,15 @@
+.git
+.gitignore
+.env
+.env.example
+.editorconfig
+.styleci.yml
+node_modules
+vendor
+tests
+storage
+public/storage
+infra
+docs
+TEST_LOG.md
+CHANGELOG.md

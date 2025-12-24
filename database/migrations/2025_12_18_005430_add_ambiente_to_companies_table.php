@@ -11,7 +11,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('companies', function (Blueprint $table) {
-            $table->integer('ambiente')->default(2)->after('ativo')->comment('1=Produção, 2=Homologação');
+            $table->integer('ambiente')->default(2)->after('status')->comment('1=Produção, 2=Homologação');
         });
     }
 
@@ -21,7 +21,7 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table('companies', function (Blueprint $table) {
-            //
+            $table->dropColumn('ambiente');
         });
     }
 };

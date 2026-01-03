@@ -76,9 +76,9 @@ class NFeController extends Controller
 
     public function index()
     {
-        $nfes = \App\Models\Nfe::whereHas('company', function ($query) {
+        $nfes = \App\Models\Nfe::with('logs')->whereHas('company', function ($query) {
             $query->where('user_id', auth()->id());
-        })->get();
+        })->orderBy('created_at', 'desc')->get();
         return view('nfe.index', compact('nfes'));
     }
 
@@ -144,5 +144,13 @@ class NFeController extends Controller
             // Log::error($e ...);
             return back()->with('error', $e->getMessage())->withInput();
         }
+    }
+    public function downloadXml(Nfe $nfe)
+    {
+        if (!$nfe->xml_path || !\Illuminate\Support\Facades\Storage::exists($nfe->xml_path)) {
+            return back()->withErrors(['error' => 'Arquivo XML não encontrado.']);
+        }
+
+        return \Illuminate\Support\Facades\Storage::download($nfe->xml_path, "nfe-{$nfe->chave}.xml");
     }
 }

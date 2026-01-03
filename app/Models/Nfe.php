@@ -32,4 +32,9 @@ class Nfe extends Model
     {
         return $this->belongsTo(Customer::class);
     }
+
+    public function logs()
+    {
+        return $this->hasMany(NfeLog::class, 'nfe_id');
+    }
 }

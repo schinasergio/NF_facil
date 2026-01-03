@@ -177,6 +177,9 @@ class NFeService
         try {
             Log::info("Transmitting NFe", ['nfe_id' => $nfe->id, 'chave' => $nfe->chave]);
             $idLote = substr(str_replace(',', '', number_format(microtime(true) * 1000000, 0, '', '')), 0, 15);
+
+            $this->createLog($nfe, 'sending_batch', 'Enviando Lote para SEFAZ', null, $xml);
+
             $resp = $tools->sefazEnviaLote([$xml], $idLote);
 
             $st = new \NFePHP\NFe\Common\Standardize();
@@ -184,6 +187,7 @@ class NFeService
 
             if ($std->cStat != 103) { // 103 = Batch Received
                 // Error handling
+                $this->createLog($nfe, 'batch_error', "{$std->cStat} - {$std->xMotivo}", null, $resp);
                 $nfe->update([
                     'status' => 'rejected',
                     'mensagem_sefaz' => "{$std->cStat} - {$std->xMotivo}"
@@ -193,6 +197,7 @@ class NFeService
             }
 
             $recibo = $std->infRec->nRec;
+            $this->createLog($nfe, 'batch_received', "Lote recebido. Recibo: {$recibo}", $recibo, $resp);
 
             // 4. Consult Receipt (Simplified synchronous wait for POC)
             sleep(2); // Wait a bit for processing
@@ -214,6 +219,7 @@ class NFeService
                     'mensagem_sefaz' => 'Autorizado o uso da NF-e',
                     'data_recebimento' => now(),
                 ]);
+                $this->createLog($nfe, 'authorized', 'Autorizado uso do documento fiscal', $protEvent->nProt, $protocolo);
                 Log::info("NFe Authorized", ['nfe_id' => $nfe->id, 'protocolo' => $protEvent->nProt]);
 
                 // Dispatch Event to send Email
@@ -223,6 +229,7 @@ class NFeService
                     'status' => 'rejected',
                     'mensagem_sefaz' => "{$protEvent->cStat} - {$protEvent->xMotivo}"
                 ]);
+                $this->createLog($nfe, 'rejected', "{$protEvent->cStat} - {$protEvent->xMotivo}", null, $protocolo);
                 Log::warning("NFe Rejected", ['nfe_id' => $nfe->id, 'cStat' => $protEvent->cStat, 'xMotivo' => $protEvent->xMotivo]);
             }
 
@@ -272,6 +279,7 @@ class NFeService
                     'status' => 'canceled',
                     'mensagem_sefaz' => 'Cancelamento homologado'
                 ]);
+                $this->createLog($nfe, 'canceled', 'Cancelamento homologado pelo emitente', $std->infEvento->nProt ?? null, $response);
                 Log::info("NFe Canceled Successfully", ['nfe_id' => $nfe->id]);
                 return $nfe->toArray();
             } else {
@@ -322,6 +330,7 @@ class NFeService
                 // We don't change NFe status, just log/notify. 
                 // Optionally save event XML.
                 Log::info("CC-e Linked Successfully", ['nfe_id' => $nfe->id]);
+                $this->createLog($nfe, 'corrected', 'Carta de Correção vinculada', $std->infEvento->nProt ?? null, $response);
                 return ['status' => 'corrected', 'message' => 'Carta de Correção vinculada com sucesso.'];
             } else {
                 Log::error("CC-e Failed", ['nfe_id' => $nfe->id, 'cStat' => $std->infEvento->cStat]);
@@ -354,5 +363,23 @@ class NFeService
             "schemes" => "PL_009_V4",
             "versao" => "4.00",
         ]), $certificate);
+    }
+
+    /**
+     * Helper to create a log entry.
+     */
+    private function createLog(Nfe $nfe, string $status, string $message, ?string $protocolo = null, $payload = null): void
+    {
+        try {
+            \App\Models\NfeLog::create([
+                'nfe_id' => $nfe->id,
+                'status' => $status,
+                'message' => $message,
+                'protocolo' => $protocolo,
+                'payload' => is_string($payload) ? $payload : json_encode($payload),
+            ]);
+        } catch (\Exception $e) {
+            Log::error("Failed to create NFe Log", ['error' => $e->getMessage()]);
+        }
     }
 }

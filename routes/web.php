@@ -62,6 +62,9 @@ Route::middleware('auth')->group(function () {
     Route::post('nfe/{nfe}/correction', [NFeController::class, 'storeCorrection'])
         ->name('nfe.correction.store')
         ->middleware('can:correction,nfe');
+    Route::get('nfe/{nfe}/xml', [NFeController::class, 'downloadXml'])
+        ->name('nfe.xml')
+        ->middleware('can:view,nfe');
 });
 
 Route::middleware('auth')->group(function () {

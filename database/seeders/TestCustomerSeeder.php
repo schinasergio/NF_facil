@@ -37,6 +37,22 @@ class TestCustomerSeeder extends Seeder
             'status' => true,
         ]);
 
+        Customer::create([
+            'company_id' => $company->id,
+            'razao_social' => 'CLIENTE TESTE (PESSOA FÍSICA) - HOMOLOGAÇÃO',
+            'cpf_cnpj' => '12345678909', // CPF Genérico Válido (Formato)
+            'indicador_ie' => '9', // Não Contribuinte
+            'email' => 'teste_pf@teste.com',
+            'telefone' => '11988887777',
+            'cep' => '01310100', // Av Paulista
+            'logradouro' => 'Av Paulista',
+            'numero' => '1000',
+            'bairro' => 'Bela Vista',
+            'cidade' => 'São Paulo',
+            'uf' => 'SP',
+            'status' => true,
+        ]);
+
         $this->command->info("Cliente Teste Criado com Sucesso: {$customer->razao_social}");
     }
 }

@@ -58,16 +58,31 @@
                             @if($products->isEmpty())
                                 <p class="text-gray-500">Nenhum produto cadastrado.</p>
                             @else
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    @foreach($products as $product)
-                                        <div class="flex items-center">
-                                            <input id="product_{{ $product->id }}" type="checkbox" name="items[][product_id]"
-                                                value="{{ $product->id }}"
-                                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
-                                            <label for="product_{{ $product->id }}" class="ml-2 text-sm text-gray-700">
-                                                {{ $product->nome }} <span class="text-gray-500">(R$
-                                                    {{ number_format($product->preco_venda, 2, ',', '.') }})</span>
-                                            </label>
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+                                    @foreach($products as $index => $product)
+                                        <div x-data="{ selected: false }"
+                                            class="flex items-center justify-between p-3 border rounded-md"
+                                            :class="{ 'bg-indigo-50 border-indigo-200': selected }">
+                                            <div class="flex items-center">
+                                                <input id="product_{{ $product->id }}" type="checkbox"
+                                                    name="items[{{ $index }}][product_id]" value="{{ $product->id }}"
+                                                    x-model="selected"
+                                                    class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
+                                                <label for="product_{{ $product->id }}"
+                                                    class="ml-2 text-sm text-gray-700 cursor-pointer">
+                                                    {{ $product->nome }}
+                                                    <span class="block text-xs text-gray-500">R$
+                                                        {{ number_format($product->preco_venda, 2, ',', '.') }}</span>
+                                                </label>
+                                            </div>
+                                            <div x-show="selected" class="ml-4">
+                                                <label for="qtd_{{ $product->id }}" class="sr-only">Qtd</label>
+                                                <input type="number" id="qtd_{{ $product->id }}"
+                                                    name="items[{{ $index }}][quantidade]" value="1" min="1"
+                                                    :disabled="!selected"
+                                                    class="w-20 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                                    placeholder="Qtd">
+                                            </div>
                                         </div>
                                     @endforeach
                                 </div>

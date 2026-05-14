@@ -270,6 +270,10 @@ class NFeService
         $stdDetPag->vPag = $valorTotal;
         $nfe->tagdetPag($stdDetPag);
 
+        $stdInfAdic = new \stdClass();
+        $stdInfAdic->infCpl = "Trib aprox R$ " . number_format($totalTotTrib, 2, ',', '.') . " Federal, Estadual e Municipal. Fonte: IBPT.";
+        $nfe->taginfAdic($stdInfAdic);
+
         // 4. Validate, Generate & Sign
         try {
             $xml = $nfe->getXML(); // Generates XML structure

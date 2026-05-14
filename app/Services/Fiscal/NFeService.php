@@ -33,10 +33,11 @@ class NFeService
      * @param Company  $company  The emitter company.
      * @param Customer $customer The recipient customer.
      * @param array    $items    List of items (products).
+     * @param array    $options  Additional options (finNFe, refNFe, etc).
      * @return Nfe The created and signed NFe model.
      * @throws Exception If generation or signing fails.
      */
-    public function generate(Company $company, Customer $customer, array $items): Nfe
+    public function generate(Company $company, Customer $customer, array $items, array $options = []): Nfe
     {
         // 1. Load Certificate
         $pfxContent = Storage::get($company->certificate->path);
@@ -81,7 +82,12 @@ class NFeService
         $serie = $nfeNumberRecord->serie;
         $ano = date('y');
         $mes = date('m');
-        $tpEmis = 1; // 1=Normal
+        
+        $contingenciaAtiva = $company->emissao_contingencia ?? false;
+        $tpEmis = $contingenciaAtiva ? 7 : 1; // 7=SVC-RS, 1=Normal
+        $dhCont = $contingenciaAtiva ? date("Y-m-d\TH:i:sP") : null;
+        $xJust = $contingenciaAtiva ? "Falha de comunicacao com a SEFAZ de origem" : null;
+        
         $mod = 55; // NF-e
 
         $chave = Keys::build(
@@ -109,16 +115,26 @@ class NFeService
         $std->idDest = $isInterstate ? 2 : 1; // 1=Internal, 2=Interstate
         $std->cMunFG = $cMunFG;
         $std->tpImp = 1;
-        $std->tpEmis = $tpEmis; // 1=Normal
+        $std->tpEmis = $tpEmis;
         $std->cDV = $cDV;
         $std->cNF = $cNF;
         $std->tpAmb = $ambiente;
-        $std->finNFe = 1; // Normal
+        $std->finNFe = $options['finNFe'] ?? 1; // 1=Normal, 4=Devolucao
         $std->indFinal = 1;
         $std->indPres = 1;
         $std->procEmi = 0;
         $std->verProc = '1.0';
+        if ($contingenciaAtiva) {
+            $std->dhCont = $dhCont;
+            $std->xJust = $xJust;
+        }
         $nfe->tagide($std);
+
+        if (($options['finNFe'] ?? 1) == 4 && !empty($options['refNFe'])) {
+            $stdRef = new \stdClass();
+            $stdRef->refNFe = $options['refNFe'];
+            $nfe->tagrefNFe($stdRef);
+        }
 
         // Emitente
         $std = new \stdClass();
@@ -466,7 +482,11 @@ class NFeService
         try {
             Log::info("Sending CC-e", ['nfe_id' => $nfe->id]);
             $chave = $nfe->chave;
-            $nSeqEvento = 1; // Simplification: assuming first correction. In real app, query max nSeqEvento from DB.
+            
+            $lastEvent = \App\Models\NfeLog::where('nfe_id', $nfe->id)
+                ->where('status', 'corrected')
+                ->count();
+            $nSeqEvento = $lastEvent + 1;
 
             $response = $tools->sefazCCe($chave, $correctionData, $nSeqEvento);
 

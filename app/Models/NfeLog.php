@@ -13,9 +13,9 @@ class NfeLog extends Model
     protected $fillable = [
         'nfe_id',
         'status',
-        'protocolo',
         'message',
         'payload',
+        'protocolo',
     ];
 
     public function nfe(): BelongsTo

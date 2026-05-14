@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use App\Events\NFeAuthorized;
 use Exception;
+use NFePHP\Common\Keys;
+use Illuminate\Support\Facades\DB;
+use App\Models\NfeNumber;
 
 /**
  * Class NFeService
@@ -52,25 +55,61 @@ class NFeService
         ]), $certificate);
 
         // 3. Create NFe Object
+        $ufMapping = [
+            'AC' => 12, 'AL' => 27, 'AP' => 16, 'AM' => 13, 'BA' => 29, 'CE' => 23, 'DF' => 53,
+            'ES' => 32, 'GO' => 52, 'MA' => 21, 'MT' => 51, 'MS' => 50, 'MG' => 31, 'PA' => 15,
+            'PB' => 25, 'PR' => 41, 'PE' => 26, 'PI' => 22, 'RJ' => 33, 'RN' => 24, 'RS' => 43,
+            'RO' => 11, 'RR' => 14, 'SC' => 42, 'SP' => 35, 'SE' => 28, 'TO' => 17
+        ];
+        $ufEmitente = $company->address->uf ?? 'SP';
+        $cUF = $ufMapping[$ufEmitente] ?? 35;
+        $cMunFG = $company->address->codigo_ibge ?? 3550308; // Fallback to SP if empty
+        $ambiente = $company->ambiente ?? 2; // 2=Homologation
+
+        // Fetch Next NFe Number with Pessimistic Locking
+        $nfeNumberRecord = DB::transaction(function () use ($company, $ambiente) {
+            $record = NfeNumber::lockForUpdate()->firstOrCreate(
+                ['company_id' => $company->id, 'ambiente' => $ambiente, 'serie' => 1],
+                ['numero' => 0]
+            );
+            $record->numero += 1;
+            $record->save();
+            return $record;
+        });
+
+        $nNF = $nfeNumberRecord->numero;
+        $serie = $nfeNumberRecord->serie;
+        $ano = date('y');
+        $mes = date('m');
+        $tpEmis = 1; // 1=Normal
+        $mod = 55; // NF-e
+
+        $chave = Keys::build(
+            $cUF, $ano, $mes, $company->cnpj, $mod, $serie, $nNF, $tpEmis
+        );
+        $cDV = substr($chave, -1);
+        $cNF = substr($chave, 35, 8); // cNF is the random 8 digits before DV
+
         $nfe = new Make();
         $std = new \stdClass();
         $std->versao = '4.00';
         $nfe->taginfNFe($std);
 
         $std = new \stdClass();
-        $std->cUF = 35; // Example SP
+        $std->cUF = $cUF;
         $std->natOp = 'VENDA';
-        $std->mod = 55;
-        $std->serie = 1;
-        $std->nNF = rand(100, 9999); // Mock number
+        $std->mod = $mod;
+        $std->serie = $serie;
+        $std->nNF = $nNF;
         $std->dhEmi = date("Y-m-d\TH:i:sP");
         $std->tpNF = 1;
         $std->idDest = 1; // 1=Internal, 2=Interstate
-        $std->cMunFG = 3550308; // SP
+        $std->cMunFG = $cMunFG;
         $std->tpImp = 1;
-        $std->tpEmis = 1; // 1=Normal
-        $std->cDV = 0;
-        $std->tpAmb = 2; // Homolog
+        $std->tpEmis = $tpEmis; // 1=Normal
+        $std->cDV = $cDV;
+        $std->cNF = $cNF;
+        $std->tpAmb = $ambiente;
         $std->finNFe = 1; // Normal
         $std->indFinal = 1;
         $std->indPres = 1;
@@ -134,16 +173,20 @@ class NFeService
         $path = "xmls/signed_{$std->nNF}.xml";
         Storage::put($path, $signedXml);
 
-        return Nfe::create([
+        $nfeObj = Nfe::create([
             'company_id' => $company->id,
             'customer_id' => $customer->id,
             'numero' => $std->nNF,
             'serie' => $std->serie,
-            'chave' => 'mock_chave_44_chars_' . rand(1000, 9999), // Key logic is complex, skipping for POC
+            'chave' => $chave,
             'xml_path' => $path,
             'status' => 'signed',
             'valor_total' => $valorTotal,
         ]);
+
+        $this->createLog($nfeObj, 'signed', 'NFe Gerada e Assinada', null, $signedXml);
+
+        return $nfeObj;
     }
 
     /**

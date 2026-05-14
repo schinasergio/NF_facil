@@ -29,7 +29,7 @@ services:
       # Persistence & Config:
       - nffacil_storage:/var/www/html/storage
       - ../.env:/var/www/html/.env
-      - nffacil_public_build:/var/www/html/public/build
+      - ../public/build:/var/www/html/public/build
     depends_on:
       - db
       - redis
@@ -44,7 +44,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - nffacil_public_build:/var/www/html/public/build
+      - ../public/build:/var/www/html/public/build
     depends_on:
       - app
 
@@ -66,4 +66,3 @@ services:
 volumes:
   nffacil_db_data:
   nffacil_storage:
-  nffacil_public_build:

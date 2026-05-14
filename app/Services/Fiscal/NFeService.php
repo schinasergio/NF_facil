@@ -135,8 +135,12 @@ class NFeService
         $std->indIEDest = $customer->indicador_ie; // 9
         $nfe->tagdest($std);
 
-        // Products (Loop)
         $valorTotal = 0;
+        $totalICMS = 0;
+        $totalPIS = 0;
+        $totalCOFINS = 0;
+        $totalTotTrib = 0;
+
         foreach ($items as $i => $item) {
             $prod = new \stdClass();
             $prod->item = $i + 1;
@@ -156,11 +160,99 @@ class NFeService
             $prod->indTot = 1;
             $nfe->tagprod($prod);
 
-            $valorTotal += $item['preco_venda'];
+            // Taxes Engine
+            $taxes = \App\Services\Fiscal\TaxCalculator::calculate($item, $company->regime_tributario ?? 1);
+            
+            $stdImposto = new \stdClass();
+            $stdImposto->item = $i + 1;
+            $stdImposto->vTotTrib = $taxes['vTotTrib'];
+            $nfe->tagimposto($stdImposto);
+
+            if (($company->regime_tributario ?? 1) == 1) {
+                // Simples Nacional
+                $stdICMS = new \stdClass();
+                $stdICMS->item = $i + 1;
+                $stdICMS->orig = $taxes['ICMS']['orig'];
+                $stdICMS->CSOSN = $taxes['ICMS']['CSOSN'];
+                $nfe->tagICMSSN($stdICMS);
+                
+                $stdPIS = new \stdClass();
+                $stdPIS->item = $i + 1;
+                $stdPIS->CST = $taxes['PIS']['CST'];
+                $nfe->tagPIS($stdPIS);
+                
+                $stdCOFINS = new \stdClass();
+                $stdCOFINS->item = $i + 1;
+                $stdCOFINS->CST = $taxes['COFINS']['CST'];
+                $nfe->tagCOFINS($stdCOFINS);
+            } else {
+                // Regime Normal
+                $stdICMS = new \stdClass();
+                $stdICMS->item = $i + 1;
+                $stdICMS->orig = $taxes['ICMS']['orig'];
+                $stdICMS->CST = $taxes['ICMS']['CST'];
+                $stdICMS->modBC = $taxes['ICMS']['modBC'];
+                $stdICMS->vBC = $taxes['ICMS']['vBC'];
+                $stdICMS->pICMS = $taxes['ICMS']['pICMS'];
+                $stdICMS->vICMS = $taxes['ICMS']['vICMS'];
+                $nfe->tagICMS($stdICMS);
+                $totalICMS += $taxes['ICMS']['vICMS'];
+                
+                $stdPIS = new \stdClass();
+                $stdPIS->item = $i + 1;
+                $stdPIS->CST = $taxes['PIS']['CST'];
+                $stdPIS->vBC = $taxes['PIS']['vBC'];
+                $stdPIS->pPIS = $taxes['PIS']['pPIS'];
+                $stdPIS->vPIS = $taxes['PIS']['vPIS'];
+                $nfe->tagPIS($stdPIS);
+                $totalPIS += $taxes['PIS']['vPIS'];
+
+                $stdCOFINS = new \stdClass();
+                $stdCOFINS->item = $i + 1;
+                $stdCOFINS->CST = $taxes['COFINS']['CST'];
+                $stdCOFINS->vBC = $taxes['COFINS']['vBC'];
+                $stdCOFINS->pCOFINS = $taxes['COFINS']['pCOFINS'];
+                $stdCOFINS->vCOFINS = $taxes['COFINS']['vCOFINS'];
+                $nfe->tagCOFINS($stdCOFINS);
+                $totalCOFINS += $taxes['COFINS']['vCOFINS'];
+            }
+
+            $valorTotal += $taxes['vProd'];
+            $totalTotTrib += $taxes['vTotTrib'];
         }
 
         // Totals
-        // (Simplified for POC, normally requires tax calculation)
+        $stdICMSTot = new \stdClass();
+        $stdICMSTot->vBC = ($company->regime_tributario ?? 1) == 1 ? 0.00 : $valorTotal;
+        $stdICMSTot->vICMS = $totalICMS;
+        $stdICMSTot->vICMSDeson = 0.00;
+        $stdICMSTot->vBCST = 0.00;
+        $stdICMSTot->vST = 0.00;
+        $stdICMSTot->vProd = $valorTotal;
+        $stdICMSTot->vFrete = 0.00;
+        $stdICMSTot->vSeg = 0.00;
+        $stdICMSTot->vDesc = 0.00;
+        $stdICMSTot->vII = 0.00;
+        $stdICMSTot->vIPI = 0.00;
+        $stdICMSTot->vPIS = $totalPIS;
+        $stdICMSTot->vCOFINS = $totalCOFINS;
+        $stdICMSTot->vOutro = 0.00;
+        $stdICMSTot->vNF = $valorTotal;
+        $stdICMSTot->vTotTrib = $totalTotTrib;
+        $nfe->tagICMSTot($stdICMSTot);
+        
+        $stdTransp = new \stdClass();
+        $stdTransp->modFrete = 9; // Sem frete
+        $nfe->tagtransp($stdTransp);
+        
+        $stdPag = new \stdClass();
+        $stdPag->vTroco = 0.00;
+        $nfe->tagpag($stdPag);
+
+        $stdDetPag = new \stdClass();
+        $stdDetPag->tPag = '01'; // Dinheiro
+        $stdDetPag->vPag = $valorTotal;
+        $nfe->tagdetPag($stdDetPag);
 
         // 4. Validate, Generate & Sign
         try {

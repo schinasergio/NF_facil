@@ -90,6 +90,9 @@ class NFeService
         $cDV = substr($chave, -1);
         $cNF = substr($chave, 35, 8); // cNF is the random 8 digits before DV
 
+        $isInterstate = $company->address->uf !== $customer->address->uf;
+        $naturezaOperacao = 'Venda de Mercadoria';
+
         $nfe = new Make();
         $std = new \stdClass();
         $std->versao = '4.00';
@@ -97,13 +100,13 @@ class NFeService
 
         $std = new \stdClass();
         $std->cUF = $cUF;
-        $std->natOp = 'VENDA';
+        $std->natOp = $naturezaOperacao;
         $std->mod = $mod;
         $std->serie = $serie;
         $std->nNF = $nNF;
         $std->dhEmi = date("Y-m-d\TH:i:sP");
         $std->tpNF = 1;
-        $std->idDest = 1; // 1=Internal, 2=Interstate
+        $std->idDest = $isInterstate ? 2 : 1; // 1=Internal, 2=Interstate
         $std->cMunFG = $cMunFG;
         $std->tpImp = 1;
         $std->tpEmis = $tpEmis; // 1=Normal
@@ -141,7 +144,7 @@ class NFeService
             $prod->cEAN = "SEM GTIN";
             $prod->xProd = $item['nome'];
             $prod->NCM = $item['ncm'];
-            $prod->CFOP = '5102'; // Mock
+            $prod->CFOP = $isInterstate ? '6102' : '5102'; // Venda (Interestadual/Interna)
             $prod->uCom = $item['unidade'];
             $prod->qCom = 1; // Quantity
             $prod->vUnCom = $item['preco_venda'];
@@ -159,11 +162,21 @@ class NFeService
         // Totals
         // (Simplified for POC, normally requires tax calculation)
 
-        // 4. Generate & Sign
+        // 4. Validate, Generate & Sign
         try {
             $xml = $nfe->getXML(); // Generates XML structure
+
+            // Validate against XSD
+            $xsdPath = base_path('vendor/nfephp-org/sped-nfe/schemes/PL_009_V4/nfe_v4.00.xsd');
+            try {
+                \NFePHP\Common\Validator::isValid($xml, $xsdPath);
+            } catch (\NFePHP\Common\Exception\ValidatorException $e) {
+                Log::error("XML Schema Validation Failed", ['errors' => $e->getMessage()]);
+                throw new Exception("XML Inválido estruturalmente (Validação XSD): " . $e->getMessage());
+            }
+
             $signedXml = $tools->signNFe($xml); // Signs XML
-            Log::info("NFe Generated and Signed", ['company_id' => $company->id, 'customer_id' => $customer->id, 'nNF' => $std->nNF]);
+            Log::info("NFe Generated and Signed", ['company_id' => $company->id, 'customer_id' => $customer->id, 'nNF' => $nNF]);
         } catch (\Exception $e) {
             Log::error("Error generating NFe", ['error' => $e->getMessage(), 'company_id' => $company->id]);
             throw new Exception("Erro ao gerar XML: " . $e->getMessage());
